@@ -156,11 +156,15 @@
                 <div class="form-group">
                     <label for="full-name">Full Name</label>
                     <input
-                        type="text"
-                        id="full-name"
-                        name="fullName"
-                        autocomplete="name"
-                        required
+                         type="text"
+                         id="full-name"
+                         name="fullName"
+                         autocomplete="name"
+                         pattern="[A-Za-z ]{2,50}"
+                         minlength="2"
+                         maxlength="50"
+                         title="Please enter letters and spaces only."
+                         required
                     >
                 </div>
 
@@ -178,11 +182,16 @@
                 <div class="form-group">
                     <label for="phone">Phone Number</label>
                     <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        autocomplete="tel"
-                        required
+                       type="tel"
+                       id="phone"
+                       name="phone"
+                       autocomplete="tel"
+                       inputmode="tel"
+                       pattern="[0-9+() -]{7,20}"
+                       minlength="7"
+                       maxlength="20"
+                       title="Please enter a valid phone number using numbers only."
+                       required
                     >
                 </div>
 
@@ -192,6 +201,8 @@
                         type="text"
                         id="subject"
                         name="subject"
+                        minlength="3"
+                        maxlength="100"
                         required
                     >
                 </div>
@@ -202,6 +213,8 @@
                         id="message"
                         name="message"
                         rows="6"
+                        minlength="10"
+                        maxlength="1000"
                         required
                     ></textarea>
                 </div>
