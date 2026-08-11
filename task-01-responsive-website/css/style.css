@@ -235,3 +235,175 @@ textarea:focus-visible {
     outline: 3px solid var(--color-accent);
     outline-offset: 3px;
 }
+
+/* ========================================
+   5. Header and Navigation
+======================================== */
+
+.site-header {
+    position: relative;
+    z-index: 10;
+    border-bottom: 1px solid var(--color-border);
+    background-color: rgba(255, 255, 255, 0.96);
+    box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+}
+
+.site-logo a {
+    color: var(--color-primary);
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.site-logo a::after {
+    content: ".";
+    color: var(--color-secondary);
+}
+
+.navigation-list {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xl);
+}
+
+.navigation-list a {
+    position: relative;
+    padding-block: var(--spacing-xs);
+    color: var(--color-text);
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: color var(--transition);
+}
+
+.navigation-list a::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    transform: scaleX(0);
+    background-color: var(--color-secondary);
+    transition: transform var(--transition);
+}
+
+.navigation-list a:hover,
+.navigation-list a:focus-visible {
+    color: var(--color-secondary);
+}
+
+.navigation-list a:hover::after,
+.navigation-list a:focus-visible::after {
+    transform: scaleX(1);
+}
+
+
+/* ========================================
+   6. Hero
+======================================== */
+
+.hero-section {
+    min-height: 650px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(85, 194, 232, 0.22),
+            transparent 28%
+        ),
+        linear-gradient(135deg, #f8fcff 0%, #e8f5fb 100%);
+}
+
+.hero-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(340px, 0.8fr);
+    align-items: center;
+    gap: var(--spacing-3xl);
+    padding-block: var(--spacing-3xl);
+}
+
+.hero-content {
+    max-width: 720px;
+}
+
+.hero-content h1 {
+    margin-bottom: var(--spacing-lg);
+}
+
+.hero-description {
+    max-width: 650px;
+    font-size: 1.15rem;
+}
+
+.hero-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+}
+
+.hero-visual {
+    min-height: 400px;
+    display: grid;
+    position: relative;
+    place-items: center;
+}
+
+.hero-visual::before,
+.hero-visual::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+}
+
+.hero-visual::before {
+    width: 360px;
+    height: 360px;
+    background-color: rgba(22, 131, 189, 0.14);
+}
+
+.hero-visual::after {
+    width: 270px;
+    height: 270px;
+    border: 2px dashed rgba(22, 131, 189, 0.35);
+}
+
+.hero-visual-card {
+    width: min(100%, 290px);
+    min-height: 230px;
+    display: flex;
+    position: relative;
+    z-index: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius-lg);
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: var(--shadow-md);
+}
+
+.visual-icon {
+    margin-bottom: var(--spacing-md);
+    color: var(--color-secondary);
+    font-size: 3.5rem;
+    font-weight: 800;
+}
+
+.hero-visual-card p {
+    color: var(--color-primary);
+    font-size: 1.1rem;
+    font-weight: 700;
+}
