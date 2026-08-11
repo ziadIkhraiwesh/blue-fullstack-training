@@ -407,3 +407,163 @@ textarea:focus-visible {
     font-size: 1.1rem;
     font-weight: 700;
 }
+/* ========================================
+   7. About
+======================================== */
+
+.about-section {
+    background-color: var(--color-surface);
+}
+
+.about-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    align-items: start;
+    gap: var(--spacing-3xl);
+}
+
+.about-content {
+    padding-right: var(--spacing-xl);
+}
+
+.about-content p {
+    font-size: 1.05rem;
+}
+
+.about-content p + p {
+    margin-top: var(--spacing-lg);
+}
+
+.about-highlights {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.highlight-card {
+    min-height: 210px;
+    padding: var(--spacing-xl);
+}
+
+.highlight-card h3 {
+    margin-bottom: var(--spacing-md);
+}
+
+
+/* ========================================
+   8. Services
+======================================== */
+
+.services-section {
+    background-color: var(--color-background);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+}
+
+.service-card {
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+}
+
+.service-number {
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--spacing-xl);
+    color: var(--color-secondary);
+    border-radius: var(--radius-sm);
+    background-color: rgba(22, 131, 189, 0.1);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.service-card h3 {
+    margin-bottom: var(--spacing-md);
+}
+
+.service-card p {
+    margin-top: auto;
+}
+
+
+/* ========================================
+   9. Statistics
+======================================== */
+
+.statistics-section {
+    position: relative;
+    overflow: hidden;
+    color: var(--color-surface);
+    background:
+        linear-gradient(
+            135deg,
+            var(--color-primary-dark),
+            var(--color-primary)
+        );
+}
+
+.statistics-section::before {
+    content: "";
+    position: absolute;
+    top: -150px;
+    right: -120px;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background-color: rgba(85, 194, 232, 0.1);
+}
+
+.statistics-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+.statistics-heading {
+    text-align: center;
+}
+
+.statistics-heading .eyebrow-text {
+    color: var(--color-accent);
+}
+
+.statistics-heading .section-title {
+    color: var(--color-surface);
+}
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--spacing-xl);
+}
+
+.statistic-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--spacing-xl);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: var(--radius-md);
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.statistic-card strong {
+    color: var(--color-accent);
+    font-size: 3rem;
+    line-height: 1;
+}
+
+.statistic-card span {
+    margin-top: var(--spacing-md);
+    color: var(--color-surface);
+    font-size: 1rem;
+    font-weight: 600;
+}
