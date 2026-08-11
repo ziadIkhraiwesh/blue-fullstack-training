@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="NexaTech Solutions provides modern digital services for businesses.">
+    <meta
+        name="description"
+        content="NexaTech Solutions provides modern digital services for businesses."
+    >
+
     <title>NexaTech Solutions | Digital Services</title>
 
     <link rel="stylesheet" href="css/style.css">
@@ -11,229 +15,348 @@
 </head>
 
 <body>
-    <header>
-        <div class="site-logo">
-            <a href="#home" aria-label="NexaTech Solutions home page">
-                NexaTech Solutions
-            </a>
-        </div>
+    <header class="site-header">
+        <div class="container header-container">
+            <div class="site-logo">
+                <a href="#home" aria-label="NexaTech Solutions home page">
+                    NexaTech
+                </a>
+            </div>
 
-        <nav aria-label="Main navigation">
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#statistics">Statistics</a></li>
-                <li><a href="#contact">Contact Us</a></li>
-            </ul>
-        </nav>
+            <nav class="main-navigation" aria-label="Main navigation">
+                <ul class="navigation-list">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#statistics">Statistics</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main>
         <section id="home" class="hero-section">
-            <h1>Building Digital Solutions for Modern Businesses</h1>
+            <div class="container hero-layout">
+                <div class="hero-content">
+                    <p class="eyebrow-text">Smart solutions for modern businesses</p>
 
-            <p>
-                We help businesses grow through reliable, accessible,
-                and user-friendly technology solutions.
-            </p>
+                    <h1>Building Digital Solutions That Move Businesses Forward</h1>
 
-            <a href="#services" class="cta-link">Explore Our Services</a>
-        </section>
-
-        <section id="about" class="about-section">
-            <h2>About Us</h2>
-
-            <p>
-                NexaTech Solutions is a technology company that helps
-                organizations improve their digital presence and daily
-                operations through practical software solutions.
-            </p>
-
-            <p>
-                Our team focuses on quality, clear communication, and
-                building solutions that match each client's needs.
-            </p>
-        </section>
-
-        <section id="services" class="services-section">
-            <h2>Our Services</h2>
-
-            <div class="services-list">
-                <article class="service-card">
-                    <h3>Web Development</h3>
-                    <p>
-                        We build responsive and accessible websites for
-                        businesses and organizations.
+                    <p class="hero-description">
+                        We help organizations grow through reliable, accessible,
+                        and user-friendly technology solutions designed around
+                        their real business needs.
                     </p>
-                </article>
 
-                <article class="service-card">
-                    <h3>Mobile App Development</h3>
-                    <p>
-                        We develop practical mobile applications that provide
-                        smooth user experiences.
-                    </p>
-                </article>
-
-                <article class="service-card">
-                    <h3>UI and UX Design</h3>
-                    <p>
-                        We design clear and user-friendly interfaces based on
-                        user and business needs.
-                    </p>
-                </article>
-
-                <article class="service-card">
-                    <h3>Cloud Solutions</h3>
-                    <p>
-                        We help businesses use secure and flexible cloud-based
-                        tools and services.
-                    </p>
-                </article>
-
-                <article class="service-card">
-                    <h3>Cybersecurity</h3>
-                    <p>
-                        We provide basic security solutions to protect systems,
-                        applications, and business data.
-                    </p>
-                </article>
-
-                <article class="service-card">
-                    <h3>Technical Support</h3>
-                    <p>
-                        We offer technical assistance and maintenance to keep
-                        business systems working effectively.
-                    </p>
-                </article>
-            </div>
-        </section>
-
-        <section id="statistics" class="statistics-section">
-            <h2>Our Achievements</h2>
-
-            <div class="statistics-list">
-                <article class="statistic">
-                    <h3>150+</h3>
-                    <p>Completed Projects</p>
-                </article>
-
-                <article class="statistic">
-                    <h3>80+</h3>
-                    <p>Happy Clients</p>
-                </article>
-
-                <article class="statistic">
-                    <h3>5+</h3>
-                    <p>Years of Experience</p>
-                </article>
-            </div>
-        </section>
-
-        <section id="contact" class="contact-section">
-            <h2>Contact Us</h2>
-
-            <div class="contact-information">
-                <h3>Get in Touch</h3>
-
-                <address>
-                    <p>Nablus Street, Al-Bireh, Palestine</p>
-                    <p>
-                        Email:
-                        <a href="mailto:info@nexatech.example">
-                            info@nexatech.example
+                    <div class="hero-actions">
+                        <a href="#services" class="button button-primary">
+                            Explore Our Services
                         </a>
-                    </p>
-                    <p>
-                        Phone:
-                        <a href="tel:+97022929090">+970 2 292 9090</a>
-                    </p>
-                </address>
+
+                        <a href="#contact" class="button button-secondary">
+                            Contact Us
+                        </a>
+                    </div>
+                </div>
+
+                <div class="hero-visual" aria-hidden="true">
+                    <div class="hero-visual-card">
+                        <span class="visual-icon">&lt;/&gt;</span>
+                        <p>Creative Digital Solutions</p>
+                    </div>
+                </div>
             </div>
+        </section>
 
-            <form action="#" method="post">
-                <div class="form-group">
-                    <label for="full-name">Full Name</label>
-                    <input
-                         type="text"
-                         id="full-name"
-                         name="fullName"
-                         autocomplete="name"
-                         pattern="[A-Za-z ]{2,50}"
-                         minlength="2"
-                         maxlength="50"
-                         title="Please enter letters and spaces only."
-                         required
-                    >
+        <section id="about" class="section about-section">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow-text">Who we are</p>
+                    <h2 class="section-title">About NexaTech</h2>
+                    <p class="section-description">
+                        We combine technical knowledge with practical business
+                        thinking to create solutions that make a real difference.
+                    </p>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        autocomplete="email"
-                        required
-                    >
+                <div class="about-layout">
+                    <div class="about-content">
+                        <p>
+                            NexaTech Solutions is a technology company that helps
+                            organizations improve their digital presence and daily
+                            operations through practical software solutions.
+                        </p>
+
+                        <p>
+                            Our team focuses on quality, clear communication, and
+                            building maintainable solutions that match each client's
+                            goals and requirements.
+                        </p>
+                    </div>
+
+                    <div class="about-highlights">
+                        <article class="card highlight-card">
+                            <h3>Our Mission</h3>
+                            <p>
+                                To deliver reliable digital solutions that simplify
+                                work and support sustainable business growth.
+                            </p>
+                        </article>
+
+                        <article class="card highlight-card">
+                            <h3>Our Approach</h3>
+                            <p>
+                                We listen, plan, build, test, and continuously
+                                improve every solution we deliver.
+                            </p>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="services" class="section services-section">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow-text">What we provide</p>
+                    <h2 class="section-title">Our Services</h2>
+                    <p class="section-description">
+                        Practical digital services designed to help organizations
+                        improve their products, processes, and customer experience.
+                    </p>
                 </div>
 
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input
-                       type="tel"
-                       id="phone"
-                       name="phone"
-                       autocomplete="tel"
-                       inputmode="tel"
-                       pattern="[0-9+() -]{7,20}"
-                       minlength="7"
-                       maxlength="20"
-                       title="Please enter a valid phone number using numbers only."
-                       required
-                    >
+                <div class="services-grid">
+                    <article class="card service-card">
+                        <span class="service-number">01</span>
+                        <h3>Web Development</h3>
+                        <p>
+                            Responsive and accessible websites built for businesses
+                            and organizations.
+                        </p>
+                    </article>
+
+                    <article class="card service-card">
+                        <span class="service-number">02</span>
+                        <h3>Mobile App Development</h3>
+                        <p>
+                            Practical mobile applications that provide smooth and
+                            consistent user experiences.
+                        </p>
+                    </article>
+
+                    <article class="card service-card">
+                        <span class="service-number">03</span>
+                        <h3>UI and UX Design</h3>
+                        <p>
+                            Clear and user-friendly interfaces based on user needs
+                            and business goals.
+                        </p>
+                    </article>
+
+                    <article class="card service-card">
+                        <span class="service-number">04</span>
+                        <h3>Cloud Solutions</h3>
+                        <p>
+                            Secure and flexible cloud-based tools that support
+                            growing business operations.
+                        </p>
+                    </article>
+
+                    <article class="card service-card">
+                        <span class="service-number">05</span>
+                        <h3>Cybersecurity</h3>
+                        <p>
+                            Security solutions that help protect systems,
+                            applications, and business data.
+                        </p>
+                    </article>
+
+                    <article class="card service-card">
+                        <span class="service-number">06</span>
+                        <h3>Technical Support</h3>
+                        <p>
+                            Technical assistance and maintenance that keep systems
+                            working effectively.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="statistics" class="section statistics-section">
+            <div class="container">
+                <div class="section-heading statistics-heading">
+                    <p class="eyebrow-text">Our impact</p>
+                    <h2 class="section-title">Results We Are Proud Of</h2>
                 </div>
 
-                <div class="form-group">
-                    <label for="subject">Subject</label>
-                    <input
-                        type="text"
-                        id="subject"
-                        name="subject"
-                        minlength="3"
-                        maxlength="100"
-                        required
-                    >
+                <div class="statistics-grid">
+                    <article class="statistic-card">
+                        <strong>150+</strong>
+                        <span>Completed Projects</span>
+                    </article>
+
+                    <article class="statistic-card">
+                        <strong>80+</strong>
+                        <span>Happy Clients</span>
+                    </article>
+
+                    <article class="statistic-card">
+                        <strong>5+</strong>
+                        <span>Years of Experience</span>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="section contact-section">
+            <div class="container">
+                <div class="section-heading">
+                    <p class="eyebrow-text">Start a conversation</p>
+                    <h2 class="section-title">Contact Us</h2>
+                    <p class="section-description">
+                        Tell us about your idea or business need, and our team will
+                        be ready to help.
+                    </p>
                 </div>
 
-                <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea
-                        id="message"
-                        name="message"
-                        rows="6"
-                        minlength="10"
-                        maxlength="1000"
-                        required
-                    ></textarea>
-                </div>
+                <div class="contact-layout">
+                    <div class="contact-information">
+                        <h3>Get in Touch</h3>
 
-                <button type="submit">Send Message</button>
-            </form>
+                        <p>
+                            Contact our team to discuss your next digital project
+                            or ask about our services.
+                        </p>
+
+                        <address>
+                            <div class="contact-item">
+                                <span>Location</span>
+                                <p>Nablus Street, Al-Bireh, Palestine</p>
+                            </div>
+
+                            <div class="contact-item">
+                                <span>Email</span>
+                                <a href="mailto:info@nexatech.example">
+                                    info@nexatech.example
+                                </a>
+                            </div>
+
+                            <div class="contact-item">
+                                <span>Phone</span>
+                                <a href="tel:+97022929090">+970 2 292 9090</a>
+                            </div>
+                        </address>
+                    </div>
+
+                    <form class="contact-form" action="#" method="post">
+                        <div class="form-group">
+                            <label for="full-name">Full Name</label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                id="full-name"
+                                name="fullName"
+                                autocomplete="name"
+                                pattern="[A-Za-z ]{2,50}"
+                                minlength="2"
+                                maxlength="50"
+                                title="Please enter letters and spaces only."
+                                required
+                            >
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input
+                                    class="form-control"
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    autocomplete="email"
+                                    required
+                                >
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input
+                                    class="form-control"
+                                    type="tel"
+                                    id="phone"
+                                    name="phone"
+                                    autocomplete="tel"
+                                    inputmode="tel"
+                                    pattern="[0-9+() -]{7,20}"
+                                    minlength="7"
+                                    maxlength="20"
+                                    title="Please enter a valid phone number."
+                                    required
+                                >
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Subject</label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                id="subject"
+                                name="subject"
+                                minlength="3"
+                                maxlength="100"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message</label>
+                            <textarea
+                                class="form-control"
+                                id="message"
+                                name="message"
+                                rows="6"
+                                minlength="10"
+                                maxlength="1000"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <button class="button button-primary" type="submit">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2026 NexaTech Solutions. All rights reserved.</p>
+    <footer class="site-footer">
+        <div class="container footer-layout">
+            <div class="footer-company">
+                <a class="footer-logo" href="#home">NexaTech</a>
+                <p>
+                    Practical digital solutions for modern organizations.
+                </p>
+            </div>
 
-        <nav aria-label="Footer navigation">
-            <ul>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#services">Services</a></li>
-                <li><a href="#contact">Contact Us</a></li>
-            </ul>
-        </nav>
+            <nav class="footer-navigation" aria-label="Footer navigation">
+                <h2>Useful Links</h2>
+
+                <ul>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="container footer-bottom">
+            <p>&copy; 2026 NexaTech Solutions. All rights reserved.</p>
+        </div>
     </footer>
 </body>
 </html>
