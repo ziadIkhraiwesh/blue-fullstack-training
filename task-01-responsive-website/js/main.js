@@ -35,3 +35,13 @@ document.addEventListener("keydown", (event) => {
         closeMenu(true);
     }
 });
+
+const desktopMediaQuery = window.matchMedia("(min-width: 769px)");
+
+function handleScreenChange(event) {
+    if (event.matches) {
+        closeMenu();
+    }
+}
+
+desktopMediaQuery.addEventListener("change", handleScreenChange);

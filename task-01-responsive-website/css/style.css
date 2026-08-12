@@ -802,7 +802,7 @@ textarea.form-control {
 ======================================== */
 
 /* Small desktop and tablet landscape */
-@media (max-width: 1024px) {.
+@media (max-width: 1024px) {
     h1 {
         font-size: 3rem;
     }
