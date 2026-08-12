@@ -116,3 +116,56 @@ The design uses reusable classes including:
 ### Challenges and Blockers
 
 No major challenges or blockers were encountered during Task 02.
+
+## Task 03 Progress
+
+During Task 03, I converted the desktop website into a responsive interface that works across desktop, tablet, and mobile screen sizes.
+
+### Responsive Implementation
+
+- Added organized media queries for screen widths around `1024px`, `768px`, and `480px`.
+- Adapted typography, spacing, grids, cards, buttons, form controls, and section layouts for smaller screens.
+- Preserved the original desktop design while preventing horizontal scrolling, overlapping content, and clipped text.
+- Changed the services layout from three columns on desktop to two columns on tablets and one column on mobile.
+- Stacked the About, Contact, form fields, statistics, and footer content when the available width becomes limited.
+
+### Mobile Navigation
+
+- Added a real mobile-menu `button` with `aria-label`, `aria-controls`, and `aria-expanded`.
+- Used JavaScript to open and close the navigation menu by toggling the `is-open` class.
+- Updated the button label and accessibility state when the menu opens or closes.
+- Closed the menu after selecting a navigation link.
+- Added support for closing the menu with the `Escape` key and returning focus to the menu button.
+- Tested the menu using mouse and keyboard controls.
+
+### Cross-Device Testing
+
+The website was tested at approximately:
+
+- `1440px`
+- `1024px`
+- `768px`
+- `390px`
+- `320px`
+
+The tested layouts contain no horizontal scrolling, overlapping sections, or clipped content.
+
+### Task 03 Screenshots
+
+#### Desktop View
+
+![Task 03 desktop view](images/task-03-desktop.png)
+
+#### Tablet View
+
+![Task 03 tablet view](images/task-03-tablet.png)
+
+#### Mobile View
+
+![Task 03 mobile view](images/task-03-mobile.png)
+
+### Challenges and Blockers
+
+I encountered a small issue with the mobile menu toggle behavior. I reviewed the JavaScript class-toggle logic, corrected it, and verified that the menu now opens and closes correctly.
+
+No remaining blockers were encountered during Task 03.
