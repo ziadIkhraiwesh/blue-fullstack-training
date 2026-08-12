@@ -1017,3 +1017,147 @@ textarea.form-control {
         flex-wrap: wrap;
     }
 }
+
+/* Narrow mobile screens */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 2.15rem;
+        letter-spacing: -0.03em;
+    }
+
+    h2 {
+        font-size: 1.7rem;
+    }
+
+    h3 {
+        font-size: 1.15rem;
+    }
+
+    .container {
+        width: min(100% - 1.5rem, var(--container-width));
+    }
+
+    .section {
+        padding-block: var(--spacing-2xl);
+    }
+
+    .section-heading {
+        margin-bottom: var(--spacing-xl);
+    }
+
+    .site-logo a,
+    .footer-logo {
+        font-size: 1.4rem;
+    }
+
+    /* Hero */
+    .hero-layout {
+        padding-block: var(--spacing-xl);
+    }
+
+    .hero-description {
+        font-size: 1rem;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hero-actions .button {
+        width: 100%;
+    }
+
+    .hero-visual {
+        min-height: 260px;
+    }
+
+    .hero-visual::before {
+        width: 240px;
+        height: 240px;
+    }
+
+    .hero-visual::after {
+        width: 190px;
+        height: 190px;
+    }
+
+    .hero-visual-card {
+        width: min(100%, 250px);
+        min-height: 170px;
+        padding: var(--spacing-lg);
+    }
+
+    .visual-icon {
+        font-size: 2.8rem;
+    }
+
+    /* About */
+    .about-highlights {
+        grid-template-columns: 1fr;
+    }
+
+    .highlight-card {
+        min-height: auto;
+        padding: var(--spacing-lg);
+    }
+
+    /* Services */
+    .services-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .service-card {
+        min-height: auto;
+        padding: var(--spacing-lg);
+    }
+
+    .service-number {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .service-card p {
+        margin-top: var(--spacing-md);
+    }
+
+    /* Statistics */
+    .statistics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .statistic-card strong {
+        font-size: 2.3rem;
+    }
+
+    /* Contact form */
+    .contact-information,
+    .contact-form {
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-md);
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .contact-form .button {
+        width: 100%;
+    }
+
+    /* Footer */
+    .footer-navigation ul {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .footer-navigation a {
+        display: flex;
+        min-height: 44px;
+        align-items: center;
+    }
+
+    .footer-bottom {
+        text-align: center;
+    }
+}
