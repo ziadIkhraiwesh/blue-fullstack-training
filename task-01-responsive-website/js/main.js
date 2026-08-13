@@ -456,6 +456,103 @@ function initializeActiveNavigation() {
     setActiveLink("home");
 }
 
+/* ========================================
+   5. Statistics Counters
+======================================== */
+
+function initializeStatisticsCounters() {
+    const statisticsSection = document.getElementById("statistics");
+    const statisticNumbers = document.querySelectorAll(
+        ".statistic-number"
+    );
+
+    if (!statisticsSection || statisticNumbers.length === 0) {
+        return;
+    }
+
+    let countersHaveStarted = false;
+
+    function showFinalValues() {
+        statisticNumbers.forEach((numberElement) => {
+            const targetValue = Number(numberElement.dataset.target);
+            const suffix = numberElement.dataset.suffix || "";
+
+            numberElement.textContent = `${targetValue}${suffix}`;
+        });
+    }
+
+    function animateCounter(numberElement) {
+        const targetValue = Number(numberElement.dataset.target);
+        const suffix = numberElement.dataset.suffix || "";
+        const animationDuration = 1200;
+        let animationStartTime = null;
+
+        function updateCounter(currentTime) {
+            if (animationStartTime === null) {
+                animationStartTime = currentTime;
+            }
+
+            const elapsedTime = currentTime - animationStartTime;
+            const progress = Math.min(
+                elapsedTime / animationDuration,
+                1
+            );
+
+            const easedProgress =
+                1 - Math.pow(1 - progress, 3);
+
+            const currentValue = Math.round(
+                targetValue * easedProgress
+            );
+
+            numberElement.textContent =
+                `${currentValue}${suffix}`;
+
+            if (progress < 1) {
+                window.requestAnimationFrame(updateCounter);
+            }
+        }
+
+        numberElement.textContent = `0${suffix}`;
+        window.requestAnimationFrame(updateCounter);
+    }
+
+    function startCounters() {
+        if (countersHaveStarted) {
+            return;
+        }
+
+        countersHaveStarted = true;
+
+        if (reducedMotionQuery.matches) {
+            showFinalValues();
+            return;
+        }
+
+        statisticNumbers.forEach((numberElement) => {
+            animateCounter(numberElement);
+        });
+    }
+
+    const statisticsObserver = new IntersectionObserver(
+        (entries, observer) => {
+            const sectionIsVisible = entries.some(
+                (entry) => entry.isIntersecting
+            );
+
+            if (sectionIsVisible) {
+                startCounters();
+                observer.disconnect();
+            }
+        },
+        {
+            threshold: 0.35
+        }
+    );
+
+    statisticsObserver.observe(statisticsSection);
+}
+
 
 /* ========================================
    6. Initialization
@@ -466,6 +563,7 @@ function initializeWebsite() {
     initializeContactForm();
     initializeBackToTop();
     initializeActiveNavigation();
+    initializeStatisticsCounters();
 }
 
 initializeWebsite();
