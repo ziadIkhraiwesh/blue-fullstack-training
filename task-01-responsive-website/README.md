@@ -169,3 +169,61 @@ The tested layouts contain no horizontal scrolling, overlapping sections, or cli
 I encountered a small issue with the mobile menu toggle behavior. I reviewed the JavaScript class-toggle logic, corrected it, and verified that the menu now opens and closes correctly.
 
 No remaining blockers were encountered during Task 03.
+
+## Task 04 Progress
+
+During Task 04, I added an organized JavaScript layer to the existing responsive website. The implementation includes accessible contact-form validation and several DOM-based page interactions.
+
+### Contact-Form Validation
+
+- Added field-level validation with readable error messages.
+- Validated required, whitespace-only, short, long, and malformed values.
+- Made the phone field optional and validated it based on the number of digits when entered.
+- Added a live character counter for the message field.
+- Focused the first invalid field after an unsuccessful submission.
+- Preserved entered values when validation errors exist.
+- Added accessible validation states using `aria-invalid`, `aria-describedby`, and live status messages.
+- Added a successful client-side submission state that resets the form and clearly explains that no data was sent to a server.
+
+### DOM Interactions
+
+- Added a back-to-top button that appears after scrolling and returns the page smoothly to the top.
+- Updated the active navigation link according to the visible page section using `IntersectionObserver`.
+- Animated the statistics counters when the statistics section first enters the viewport.
+- Prevented the statistics animation from running repeatedly.
+- Preserved the accessible mobile navigation functionality from Task 03.
+- Respected `prefers-reduced-motion` for smooth scrolling and counter animations.
+
+### Testing
+
+The following cases were tested:
+
+- Empty and whitespace-only values.
+- Invalid email addresses.
+- Optional, short, long, and malformed phone numbers.
+- Short and valid subject and message values.
+- Invalid and valid form submissions.
+- Keyboard navigation and visible focus states.
+- Mobile navigation, back-to-top behavior, active navigation, and statistics counters.
+- Responsive layouts at desktop, tablet, and mobile sizes.
+- Browser console output and JavaScript regressions.
+
+### Task 04 Screenshots
+
+#### Invalid Form State
+
+![Task 04 invalid form](images/task-04-invalid-form.png)
+
+#### Successful Submission State
+
+![Task 04 successful form](images/task-04-success-form.png)
+
+#### Page Interaction
+
+![Task 04 page interaction](images/task-04-page-interaction.png)
+
+### Challenges and Blockers
+
+A local `file://` security warning appeared while testing anchor links inside browser device emulation. The website functionality worked correctly, and the warning can be avoided by running the project through a local HTTP server or GitHub Pages.
+
+No remaining implementation blockers were encountered during Task 04.
