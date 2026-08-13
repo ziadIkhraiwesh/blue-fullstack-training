@@ -316,11 +316,9 @@ textarea:focus-visible {
     align-items: center;
     overflow: hidden;
     background:
-        radial-gradient(
-            circle at 85% 20%,
+        radial-gradient(circle at 85% 20%,
             rgba(85, 194, 232, 0.22),
-            transparent 28%
-        ),
+            transparent 28%),
         linear-gradient(135deg, #f8fcff 0%, #e8f5fb 100%);
 }
 
@@ -407,6 +405,7 @@ textarea:focus-visible {
     font-size: 1.1rem;
     font-weight: 700;
 }
+
 /* ========================================
    7. About
 ======================================== */
@@ -430,7 +429,7 @@ textarea:focus-visible {
     font-size: 1.05rem;
 }
 
-.about-content p + p {
+.about-content p+p {
     margin-top: var(--spacing-lg);
 }
 
@@ -503,11 +502,9 @@ textarea:focus-visible {
     overflow: hidden;
     color: var(--color-surface);
     background:
-        linear-gradient(
-            135deg,
+        linear-gradient(135deg,
             var(--color-primary-dark),
-            var(--color-primary)
-        );
+            var(--color-primary));
 }
 
 .statistics-section::before {
@@ -567,6 +564,7 @@ textarea:focus-visible {
     font-size: 1rem;
     font-weight: 600;
 }
+
 /* ========================================
    10. Contact Form
 ======================================== */
@@ -587,11 +585,9 @@ textarea:focus-visible {
     color: var(--color-surface);
     border-radius: var(--radius-lg);
     background:
-        linear-gradient(
-            145deg,
+        linear-gradient(145deg,
             var(--color-primary-dark),
-            var(--color-primary)
-        );
+            var(--color-primary));
 }
 
 .contact-information h3 {
@@ -600,7 +596,7 @@ textarea:focus-visible {
     font-size: 1.7rem;
 }
 
-.contact-information > p {
+.contact-information>p {
     color: rgba(255, 255, 255, 0.75);
 }
 
@@ -768,7 +764,7 @@ textarea.form-control {
    12. Mobile Navigation base
 ======================================== */
 
-.menu-toggle{
+.menu-toggle {
     width: 48px;
     height: 48px;
     display: none;
@@ -791,9 +787,8 @@ textarea.form-control {
     display: block;
     border-radius: var(--radius-pill);
     background-color: currentColor;
-    transition: 
-        transform var(--transition)
-        opacity var(--transition);
+    transition:
+        transform var(--transition) opacity var(--transition);
 }
 
 
@@ -806,12 +801,13 @@ textarea.form-control {
     h1 {
         font-size: 3rem;
     }
+
     h2 {
         font-size: 2.1rem;
     }
-    
+
     .container {
-        width: min(100% - 2.5rem,var(--container-width));
+        width: min(100% - 2.5rem, var(--container-width));
     }
 
     .section {
@@ -1159,5 +1155,195 @@ textarea.form-control {
 
     .footer-bottom {
         text-align: center;
+    }
+}
+
+/* ========================================
+   14. JavaScript Interaction States
+======================================== */
+
+/* Form validation */
+.optional-text {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+.field-error {
+    min-height: 1.35rem;
+    display: block;
+    margin-top: var(--spacing-xs);
+    color: #b42318;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.form-control.is-invalid {
+    border-color: #b42318;
+    background-color: #fff7f6;
+    box-shadow: 0 0 0 3px rgba(180, 35, 24, 0.12);
+}
+
+.form-control.is-valid {
+    border-color: #16803c;
+    background-color: #f6fff8;
+}
+
+.form-control.is-invalid:focus {
+    border-color: #b42318;
+    box-shadow: 0 0 0 4px rgba(180, 35, 24, 0.16);
+}
+
+.form-control.is-valid:focus {
+    border-color: #16803c;
+    box-shadow: 0 0 0 4px rgba(22, 128, 60, 0.14);
+}
+
+.message-meta {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+}
+
+.message-meta .field-error {
+    flex: 1;
+}
+
+.character-count {
+    flex-shrink: 0;
+    margin-top: var(--spacing-xs);
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+}
+
+.character-count.is-near-limit {
+    color: #9a6700;
+    font-weight: 700;
+}
+
+.form-status {
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+}
+
+.form-status[hidden] {
+    display: none;
+}
+
+.form-status.is-success {
+    color: #116329;
+    border: 1px solid #7acb8e;
+    background-color: #edfdf1;
+}
+
+.form-status.is-error {
+    color: #8f1d16;
+    border: 1px solid #ef9a92;
+    background-color: #fff1f0;
+}
+
+
+/* Active navigation state */
+.navigation-list a.is-active {
+    color: var(--color-secondary);
+}
+
+.navigation-list a.is-active::after {
+    transform: scaleX(1);
+}
+
+@media (max-width: 768px) {
+    .navigation-list a.is-active {
+        color: var(--color-primary);
+        background-color: rgba(22, 131, 189, 0.12);
+    }
+}
+
+
+/* Back-to-top button */
+.back-to-top {
+    width: 50px;
+    height: 50px;
+    display: grid;
+    position: fixed;
+    right: var(--spacing-lg);
+    bottom: var(--spacing-lg);
+    z-index: 50;
+    place-items: center;
+    color: var(--color-surface);
+    border-radius: 50%;
+    background-color: var(--color-secondary);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px);
+    transition:
+        opacity var(--transition),
+        visibility var(--transition),
+        transform var(--transition),
+        background-color var(--transition);
+}
+
+.back-to-top span {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.back-to-top:hover {
+    background-color: var(--color-secondary-dark);
+    transform: translateY(-2px);
+}
+
+.back-to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+
+/* Statistics animation preparation */
+.statistic-number {
+    min-width: 4ch;
+    font-variant-numeric: tabular-nums;
+}
+
+
+/* Narrow mobile adjustments */
+@media (max-width: 480px) {
+    .message-meta {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .character-count {
+        align-self: flex-end;
+    }
+
+    .back-to-top {
+        width: 46px;
+        height: 46px;
+        right: var(--spacing-md);
+        bottom: var(--spacing-md);
+    }
+}
+
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
     }
 }
