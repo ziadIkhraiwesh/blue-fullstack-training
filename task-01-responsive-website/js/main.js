@@ -360,6 +360,102 @@ function initializeContactForm() {
     updateMessageCount();
 }
 
+/* ========================================
+   3. Back-to-Top Behavior
+======================================== */
+
+function initializeBackToTop() {
+    const backToTopButton = document.getElementById("back-to-top");
+
+    if (!backToTopButton) {
+        return;
+    }
+
+    function updateBackToTopVisibility() {
+        const shouldShowButton = window.scrollY > 500;
+
+        backToTopButton.classList.toggle(
+            "is-visible",
+            shouldShowButton
+        );
+    }
+
+    backToTopButton.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: reducedMotionQuery.matches
+                ? "auto"
+                : "smooth"
+        });
+    });
+
+    window.addEventListener(
+        "scroll",
+        updateBackToTopVisibility,
+        { passive: true }
+    );
+
+    updateBackToTopVisibility();
+}
+
+
+/* ========================================
+   4. Active Navigation State
+======================================== */
+
+function initializeActiveNavigation() {
+    const sections = document.querySelectorAll("main section[id]");
+    const navigationLinks = document.querySelectorAll(
+        '.navigation-list a[href^="#"]'
+    );
+
+    if (sections.length === 0 || navigationLinks.length === 0) {
+        return;
+    }
+
+    function setActiveLink(sectionId) {
+        navigationLinks.forEach((link) => {
+            const isActive =
+                link.getAttribute("href") === `#${sectionId}`;
+
+            link.classList.toggle("is-active", isActive);
+
+            if (isActive) {
+                link.setAttribute("aria-current", "page");
+            } else {
+                link.removeAttribute("aria-current");
+            }
+        });
+    }
+
+    const sectionObserver = new IntersectionObserver(
+        (entries) => {
+            const visibleSections = entries
+                .filter((entry) => entry.isIntersecting)
+                .sort(
+                    (firstEntry, secondEntry) =>
+                        secondEntry.intersectionRatio -
+                        firstEntry.intersectionRatio
+                );
+
+            if (visibleSections.length > 0) {
+                setActiveLink(visibleSections[0].target.id);
+            }
+        },
+        {
+            root: null,
+            rootMargin: "-25% 0px -55% 0px",
+            threshold: [0, 0.1, 0.25, 0.5]
+        }
+    );
+
+    sections.forEach((section) => {
+        sectionObserver.observe(section);
+    });
+
+    setActiveLink("home");
+}
+
 
 /* ========================================
    6. Initialization
@@ -368,6 +464,8 @@ function initializeContactForm() {
 function initializeWebsite() {
     initializeMobileNavigation();
     initializeContactForm();
+    initializeBackToTop();
+    initializeActiveNavigation();
 }
 
 initializeWebsite();
