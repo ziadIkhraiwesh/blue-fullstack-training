@@ -241,11 +241,15 @@ textarea:focus-visible {
 ======================================== */
 
 .site-header {
-    position: relative;
-    z-index: 10;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     border-bottom: 1px solid var(--color-border);
     background-color: rgba(255, 255, 255, 0.96);
     box-shadow: var(--shadow-sm);
+}
+section {
+    scroll-margin-top: 90px;
 }
 
 .header-container {
@@ -1346,4 +1350,32 @@ textarea.form-control {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
     }
+}
+
+.skip-link {
+    position: fixed;
+    top: 0;
+    left: 1rem;
+    z-index: 2000;
+    padding: 0.75rem 1rem;
+    color: #ffffff;
+    background-color: #0b3553;
+    border-radius: 0 0 0.375rem 0.375rem;
+    transform: translateY(-120%);
+    transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+.skip-link:focus-visible {
+    outline-color: #f59e0b;
+}
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid #f59e0b;
+    outline-offset: 3px;
 }
