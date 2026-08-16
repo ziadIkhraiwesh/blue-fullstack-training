@@ -1,22 +1,64 @@
 # NexaTech Solutions Company Website
 
-## Project Description
+## Project Overview
 
-This project is the initial semantic HTML structure for a fictional technology company website. It was created as part of Task 01 of the Blue Full-Stack Development Training Program.
+NexaTech Solutions is a responsive single-page website created for a fictional technology company as part of the Blue Full-Stack Development Training Program.
 
-The page includes a header, navigation menu, hero section, About Us section, services, company statistics, contact information, a contact form, and a footer.
+The project was developed and improved throughout Tasks 01-05. It includes semantic HTML, reusable CSS architecture, responsive layouts, accessible mobile navigation, contact-form validation, DOM interactions, frontend quality assurance, accessibility improvements, performance testing, and GitHub Pages deployment.
 
-The main focus of Task 01 is development environment setup, Git and GitHub workflow, project organization, and semantic HTML.
+## Live Website
+
+- Live website: https://ziadikhraiwesh.github.io/blue-fullstack-training/task-01-responsive-website/
+- GitHub repository: https://github.com/ziadIkhraiwesh/blue-fullstack-training
+- QA checklist: [qa-checklist.md](qa-checklist.md)
+
+## Main Features
+
+- Semantic single-page company website.
+- Responsive desktop, tablet, and mobile layouts.
+- Accessible mobile navigation menu.
+- Sticky navigation header.
+- Active navigation state while scrolling.
+- Visible keyboard-focus indicators.
+- Skip-to-main-content link.
+- Six reusable service cards.
+- Animated company statistics.
+- Accessible contact-form validation.
+- Field-level validation messages.
+- Live message character counter.
+- Successful form-submission state.
+- Back-to-top button.
+- Reduced-motion support.
+- Cross-browser and responsive testing.
+- GitHub Pages deployment.
 
 ## Technologies and Tools
+
+### Frontend Technologies
 
 - HTML5
 - CSS3
 - JavaScript
+- CSS Flexbox
+- CSS Grid
+- CSS custom properties
+- Media queries
+- DOM APIs
+- Intersection Observer API
+
+### Development and Testing Tools
+
 - Visual Studio Code
 - Git
 - GitHub
+- GitHub Pages
 - Google Chrome
+- Microsoft Edge
+- Chrome DevTools
+- Lighthouse
+
+### Environment Tools Verified During Task 01
+
 - Node.js and npm
 - PHP
 - MySQL
@@ -29,126 +71,101 @@ The main focus of Task 01 is development environment setup, Git and GitHub workf
 ```text
 task-01-responsive-website/
 |-- index.html
+|-- qa-checklist.md
 |-- css/
 |   `-- style.css
 |-- js/
 |   `-- main.js
 |-- images/
-|   `-- .gitkeep
+|   |-- task-02-desktop.png
+|   |-- task-03-desktop.png
+|   |-- task-03-tablet.png
+|   |-- task-03-mobile.png
+|   |-- task-04-invalid-form.png
+|   |-- task-04-success-form.png
+|   |-- task-04-page-interaction.png
+|   |-- task-05-desktop.png
+|   |-- task-05-mobile.png
+|   |-- task-05-lighthouse.png
+|   `-- task-05-keyboard-focus.png
 `-- README.md
 ```
 
 ## How to Run the Project
 
-1. Download or clone the repository.
-2. Open the `blue-fullstack-training` folder in Visual Studio Code.
+No packages or build commands are required.
+
+### Option 1: Open Directly
+
+1. Clone or download the repository.
+2. Open the `blue-fullstack-training` folder.
 3. Open the `task-01-responsive-website` folder.
-4. Open the `index.html` file in Google Chrome or another modern web browser.
+4. Open `index.html` in a modern browser.
 
-No additional packages or installation commands are required to run Task 01.
+### Option 2: Run Through a Local Server
 
-## Task 01 Summary
+From the repository directory, run:
 
-During Task 01, I completed the following work:
+```bash
+php -S localhost:8000 -t task-01-responsive-website
+```
+
+Then open:
+
+```text
+http://localhost:8000
+```
+
+The project can also be opened using the Live Server extension in Visual Studio Code.
+
+## Task 01 - Semantic HTML and Project Setup
+
+During Task 01, I:
 
 - Installed and verified the required development tools.
-- Created a public GitHub repository.
+- Created and connected the public GitHub repository.
 - Created the required project folder structure.
-- Initialized Git and connected the local project to GitHub.
-- Built the company website using semantic HTML5 elements.
-- Added the required page sections and navigation links.
-- Added six service cards and three company statistics.
-- Created an accessible contact form with visible labels and suitable input types.
-- Added basic HTML form validation.
+- Built the website using semantic HTML5 elements.
+- Added a header, navigation, hero, About section, services, statistics, contact section, contact form, and footer.
+- Added six company services and three statistics.
+- Added visible form labels and suitable input types.
 - Linked the external CSS and JavaScript files.
-- Added basic placeholder styling.
-- Used meaningful Git commits to document the development progress.
+- Used meaningful Git commits.
 
-## Challenges and Blockers
+### Task 01 Challenge
 
-I initially faced an issue while connecting the local repository to GitHub because the remote repository URL was incorrect. I corrected the remote URL and successfully pushed the project.
+The initial remote GitHub repository URL was incorrect. I corrected the remote URL and successfully pushed the project.
 
-No remaining blockers were encountered during Task 01.
+## Task 02 - CSS Architecture and Desktop Styling
 
-## Future Improvements
+During Task 02, I:
 
-Full responsive styling and JavaScript interactions will be added during the upcoming training tasks.
+- Organized the stylesheet into variables, base rules, typography, reusable components, and section-specific styles.
+- Used CSS custom properties for colors, spacing, borders, shadows, transitions, and container widths.
+- Used Flexbox for navigation, buttons, and alignment.
+- Used CSS Grid for the hero, About section, services, statistics, contact section, and form.
+- Created reusable classes for containers, sections, buttons, cards, and form controls.
+- Applied consistent typography, spacing, colors, shadows, and border radii.
+- Completed the full desktop layout without using CSS frameworks.
 
-## Task 02 Progress
-
-During Task 02, I converted the semantic HTML structure into a complete desktop-styled company website.
-
-### Styling Approach
-
-- Organized the CSS file into variables, base styles, typography, reusable utilities, and section-specific styles.
-- Used CSS custom properties for colors, spacing, border radii, shadows, transitions, and the maximum container width.
-- Applied a consistent typography hierarchy and reusable spacing values across the page.
-- Added visible hover and keyboard-focus states to interactive elements.
-
-### Layout Systems
-
-- Used Flexbox for the header, navigation, buttons, and footer alignment.
-- Used CSS Grid for the hero, About section, service cards, statistics, contact section, and form rows.
-- Used a reusable centered container to maintain consistent alignment and horizontal spacing.
-
-### Reusable Components
-
-The design uses reusable classes including:
-
-- `container`
-- `section`
-- `section-title`
-- `button`
-- `card`
-- `form-control`
-
-### Design Decisions
-
-- Used blue tones to create a professional technology-company appearance.
-- Used consistent cards, shadows, spacing, and border radii.
-- Kept the page focused on desktop styling because responsive behavior and mobile navigation will be implemented in Task 03.
-- Avoided frameworks, inline styles, copied templates, and unnecessary absolute positioning.
-
-### Desktop Screenshot
+### Task 02 Screenshot
 
 ![Task 02 desktop design](images/task-02-desktop.png)
 
-### Challenges and Blockers
+## Task 03 - Responsive Design and Mobile Navigation
 
-No major challenges or blockers were encountered during Task 02.
+During Task 03, I:
 
-## Task 03 Progress
-
-During Task 03, I converted the desktop website into a responsive interface that works across desktop, tablet, and mobile screen sizes.
-
-### Responsive Implementation
-
-- Added organized media queries for screen widths around `1024px`, `768px`, and `480px`.
-- Adapted typography, spacing, grids, cards, buttons, form controls, and section layouts for smaller screens.
-- Preserved the original desktop design while preventing horizontal scrolling, overlapping content, and clipped text.
-- Changed the services layout from three columns on desktop to two columns on tablets and one column on mobile.
-- Stacked the About, Contact, form fields, statistics, and footer content when the available width becomes limited.
-
-### Mobile Navigation
-
-- Added a real mobile-menu `button` with `aria-label`, `aria-controls`, and `aria-expanded`.
-- Used JavaScript to open and close the navigation menu by toggling the `is-open` class.
-- Updated the button label and accessibility state when the menu opens or closes.
-- Closed the menu after selecting a navigation link.
-- Added support for closing the menu with the `Escape` key and returning focus to the menu button.
-- Tested the menu using mouse and keyboard controls.
-
-### Cross-Device Testing
-
-The website was tested at approximately:
-
-- `1440px`
-- `1024px`
-- `768px`
-- `390px`
-- `320px`
-
-The tested layouts contain no horizontal scrolling, overlapping sections, or clipped content.
+- Added media queries for desktop, tablet, and mobile layouts.
+- Adapted typography, spacing, grids, buttons, cards, and form controls.
+- Changed the services layout from three columns to two columns and then one column.
+- Stacked content where necessary on smaller screens.
+- Prevented horizontal scrolling, overlap, and clipped content.
+- Added a real mobile-menu button.
+- Used `aria-label`, `aria-controls`, and `aria-expanded`.
+- Added mouse and keyboard support.
+- Closed the menu after selecting a link.
+- Added Escape-key support and returned focus to the menu button.
 
 ### Task 03 Screenshots
 
@@ -164,49 +181,37 @@ The tested layouts contain no horizontal scrolling, overlapping sections, or cli
 
 ![Task 03 mobile view](images/task-03-mobile.png)
 
-### Challenges and Blockers
+### Task 03 Challenge
 
-I encountered a small issue with the mobile menu toggle behavior. I reviewed the JavaScript class-toggle logic, corrected it, and verified that the menu now opens and closes correctly.
+The mobile-menu toggle initially had a small behavior issue. I corrected the class-toggle logic and retested the menu using mouse and keyboard controls.
 
-No remaining blockers were encountered during Task 03.
+## Task 04 - JavaScript DOM Interactions and Form Validation
 
-## Task 04 Progress
-
-During Task 04, I added an organized JavaScript layer to the existing responsive website. The implementation includes accessible contact-form validation and several DOM-based page interactions.
+During Task 04, I organized the JavaScript inside `main.js` and implemented accessible contact-form validation and DOM interactions.
 
 ### Contact-Form Validation
 
-- Added field-level validation with readable error messages.
-- Validated required, whitespace-only, short, long, and malformed values.
-- Made the phone field optional and validated it based on the number of digits when entered.
-- Added a live character counter for the message field.
-- Focused the first invalid field after an unsuccessful submission.
-- Preserved entered values when validation errors exist.
-- Added accessible validation states using `aria-invalid`, `aria-describedby`, and live status messages.
-- Added a successful client-side submission state that resets the form and clearly explains that no data was sent to a server.
+- Validated required and whitespace-only values.
+- Validated name length.
+- Validated email format.
+- Kept the phone field optional while validating its digit length when entered.
+- Validated subject and message lengths.
+- Added field-level error messages.
+- Added a live message character counter.
+- Focused the first invalid field.
+- Preserved entered values when validation failed.
+- Used `aria-invalid`, `aria-describedby`, and accessible status messages.
+- Added a successful client-side state.
+- Reset the form after successful validation.
+- Clearly explained that the demonstration does not send data to a server.
 
-### DOM Interactions
+### Page Interactions
 
-- Added a back-to-top button that appears after scrolling and returns the page smoothly to the top.
-- Updated the active navigation link according to the visible page section using `IntersectionObserver`.
-- Animated the statistics counters when the statistics section first enters the viewport.
-- Prevented the statistics animation from running repeatedly.
-- Preserved the accessible mobile navigation functionality from Task 03.
-- Respected `prefers-reduced-motion` for smooth scrolling and counter animations.
-
-### Testing
-
-The following cases were tested:
-
-- Empty and whitespace-only values.
-- Invalid email addresses.
-- Optional, short, long, and malformed phone numbers.
-- Short and valid subject and message values.
-- Invalid and valid form submissions.
-- Keyboard navigation and visible focus states.
-- Mobile navigation, back-to-top behavior, active navigation, and statistics counters.
-- Responsive layouts at desktop, tablet, and mobile sizes.
-- Browser console output and JavaScript regressions.
+- Added a back-to-top button.
+- Updated the active navigation link while scrolling.
+- Animated the statistics counters once when they entered the viewport.
+- Preserved accessible mobile-navigation behavior.
+- Added reduced-motion support.
 
 ### Task 04 Screenshots
 
@@ -222,8 +227,107 @@ The following cases were tested:
 
 ![Task 04 page interaction](images/task-04-page-interaction.png)
 
-### Challenges and Blockers
+### Task 04 Challenge
 
-A local `file://` security warning appeared while testing anchor links inside browser device emulation. The website functionality worked correctly, and the warning can be avoided by running the project through a local HTTP server or GitHub Pages.
+A local `file://` security warning appeared during browser device-emulation testing. The deployed website works correctly, and the warning is avoided by using a local HTTP server or GitHub Pages.
 
-No remaining implementation blockers were encountered during Task 04.
+## Task 05 - Frontend QA, Accessibility, Performance, and Deployment
+
+During Task 05, I completed a structured final quality review of the work implemented during Tasks 01-04.
+
+### Functional QA and Code Review
+
+- Retested desktop and mobile navigation.
+- Retested section links and active navigation states.
+- Retested contact-form validation and successful submission.
+- Retested the character counter, statistics animation, and back-to-top button.
+- Reviewed the HTML, CSS, and JavaScript.
+- Checked for unnecessary console statements and temporary debugging code.
+- Confirmed that section IDs are unique.
+- Confirmed that form labels match their controls.
+- Confirmed that the deployed browser console is clean.
+- Documented the test results in [qa-checklist.md](qa-checklist.md).
+
+### Accessibility Improvements
+
+- Added a visible-on-focus skip link.
+- Added clear `:focus-visible` styles.
+- Tested the page using Tab, Shift+Tab, Enter, Space, and Escape.
+- Confirmed logical keyboard-focus order.
+- Confirmed accessible form labels, errors, and status messages.
+- Improved text and button color contrast.
+- Tested the website at 200% zoom.
+- Confirmed reduced-motion support.
+- Achieved a Lighthouse Accessibility score of 100.
+
+### Performance Review
+
+- Confirmed that the main JavaScript file loads using `defer`.
+- Confirmed that no unnecessary external libraries, fonts, or icon packages are loaded.
+- Confirmed that the CSS-based visuals do not require image optimization.
+- Verified that no large content images require compression or lazy loading.
+- Ran Lighthouse in an Incognito browser window.
+- Achieved a Lighthouse Performance score of 99.
+
+### Responsive and Cross-Browser Testing
+
+The final website was tested at:
+
+- `320px`
+- `375px`
+- `768px`
+- `1024px`
+- `1440px`
+- `200%` browser zoom
+
+The website was tested in:
+
+- Google Chrome
+- Microsoft Edge
+
+No major horizontal scrolling, overlap, clipping, keyboard, validation, or browser-console issues remain.
+
+## Lighthouse Results
+
+| Category | Score |
+|---|---:|
+| Performance | 99 |
+| Accessibility | 100 |
+| Best Practices | 100 |
+| SEO | 100 |
+
+## Task 05 Evidence
+
+### Final Desktop View
+
+![Task 05 desktop view](images/task-05-desktop.png)
+
+### Final Mobile View
+
+![Task 05 mobile view](images/task-05-mobile.png)
+
+### Lighthouse Results
+
+![Task 05 Lighthouse results](images/task-05-lighthouse.png)
+
+### Visible Keyboard-Focus State
+
+![Task 05 keyboard focus](images/task-05-keyboard-focus.png)
+
+## QA Documentation
+
+The full functional, accessibility, responsive, cross-browser, performance, and regression-testing results are available in:
+
+[Frontend QA Checklist](qa-checklist.md)
+
+## Known Limitations
+
+- The contact form is a frontend demonstration and does not send information to a backend, email service, database, or external API.
+- The website does not currently contain content images; therefore image compression and lazy loading are not applicable.
+- No known critical or major issues remain.
+
+## Deployment
+
+The final frontend version is deployed through GitHub Pages:
+
+https://ziadikhraiwesh.github.io/blue-fullstack-training/task-01-responsive-website/
