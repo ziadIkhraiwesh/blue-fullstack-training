@@ -320,11 +320,75 @@ The full functional, accessibility, responsive, cross-browser, performance, and 
 
 [Frontend QA Checklist](qa-checklist.md)
 
+## Task 06 - Modern JavaScript and REST API Integration
+
+During Task 06, I extended the existing website with two data-driven sections using modern vanilla JavaScript.
+
+### Featured Projects
+
+- Created an array containing six structured project objects.
+- Included an ID, title, category, description, technology, and year for each project.
+- Generated all project cards dynamically instead of hardcoding repeated HTML.
+- Added All, Web, Mobile, and UI/UX category filters.
+- Updated the visible project count whenever a filter is selected.
+- Saved the selected category in `localStorage` and restored it after page refresh.
+- Used modern JavaScript features including `const`, `let`, arrow functions, destructuring, template literals, spread syntax, `map()`, and `filter()`.
+
+### REST API Integration
+
+The Latest Posts section loads data from the JSONPlaceholder REST API:
+
+https://jsonplaceholder.typicode.com/posts
+
+- Used `fetch()` inside an asynchronous function with `async` and `await`.
+- Checked `response.ok` before processing the response.
+- Converted the response to JSON and displayed nine returned posts.
+- Used `textContent` to safely render external API content.
+- Implemented loading, success, empty, no-results, and error states.
+- Added a Retry button that repeats the request without reloading the page.
+- Prevented repeated Retry actions from duplicating cards or event listeners.
+
+### Search and UI State
+
+- Added case-insensitive client-side search.
+- Matched the search value against post titles and body content.
+- Filtered the already loaded data without sending additional API requests.
+- Added a live visible-result count.
+- Added a Clear Search button.
+- Added a clear no-matching-results message.
+- Kept loading, error, empty, no-results, and successful data states separate.
+
+### API and Quality Testing
+
+- Inspected the request using the browser Network panel.
+- Confirmed that the endpoint uses the GET method and returns a successful response.
+- Simulated an offline request failure.
+- Confirmed that the error message and Retry button work correctly.
+- Restored the connection and successfully loaded the posts through Retry without refreshing.
+- Tested the new sections at 320px, 375px, 768px, 1024px, and 1440px.
+- Tested keyboard navigation and visible focus states.
+- Confirmed that the final browser console contains no JavaScript errors.
+
+### Task 06 Screenshots
+
+#### Dynamic Projects and Category Filters
+
+![Task 06 projects](images/task-06-projects.png)
+
+#### Successfully Loaded API Posts
+
+![Task 06 API posts](images/task-06-posts.png)
+
+#### API Search No-Results State
+
+![Task 06 no-results state](images/task-06-no-results.png)
+
 ## Known Limitations
 
 - The contact form is a frontend demonstration and does not send information to a backend, email service, database, or external API.
 - The website does not currently contain content images; therefore image compression and lazy loading are not applicable.
 - No known critical or major issues remain.
+- The Latest Posts section depends on the external JSONPlaceholder API and requires an internet connection.
 
 ## Deployment
 
