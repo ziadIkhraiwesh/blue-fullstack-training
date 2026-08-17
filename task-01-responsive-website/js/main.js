@@ -553,6 +553,328 @@ function initializeStatisticsCounters() {
     statisticsObserver.observe(statisticsSection);
 }
 
+/* =========================================
+   Task 06 - Featured Projects
+   ========================================= */
+
+const PROJECT_FILTER_STORAGE_KEY = "nexatech-project-filter";
+
+const featuredProjects = [
+    {
+        id: 1,
+        title: "Business Analytics Dashboard",
+        category: "web",
+        categoryLabel: "Web",
+        description:
+            "A responsive dashboard that helps businesses monitor performance and important operational data.",
+        technology: "HTML, CSS, JavaScript",
+        year: 2026
+    },
+    {
+        id: 2,
+        title: "Online Booking Platform",
+        category: "web",
+        categoryLabel: "Web",
+        description:
+            "A user-friendly booking interface for managing appointments and service availability.",
+        technology: "JavaScript",
+        year: 2026
+    },
+    {
+        id: 3,
+        title: "Smart Study Assistant",
+        category: "mobile",
+        categoryLabel: "Mobile",
+        description:
+            "A mobile application that helps students organize subjects, assignments, and upcoming exams.",
+        technology: "Flutter",
+        year: 2026
+    },
+    {
+        id: 4,
+        title: "Inventory Management App",
+        category: "mobile",
+        categoryLabel: "Mobile",
+        description:
+            "A practical mobile solution for reviewing products, stock quantities, and inventory updates.",
+        technology: "Mobile Application",
+        year: 2026
+    },
+    {
+        id: 5,
+        title: "Healthcare Portal Design",
+        category: "ui-ux",
+        categoryLabel: "UI/UX",
+        description:
+            "An accessible interface concept that simplifies appointment and patient-service navigation.",
+        technology: "Interface Design",
+        year: 2026
+    },
+    {
+        id: 6,
+        title: "E-Commerce Experience",
+        category: "ui-ux",
+        categoryLabel: "UI/UX",
+        description:
+            "A modern shopping experience focused on clear product discovery and a simple checkout flow.",
+        technology: "UX Research",
+        year: 2026
+    }
+];
+
+const getProjectsByCategory = (category) =>
+    category === "all"
+        ? [...featuredProjects]
+        : featuredProjects.filter(
+            ({ category: projectCategory }) => projectCategory === category
+        );
+
+const createProjectCardMarkup = ({
+    id,
+    title,
+    categoryLabel,
+    description,
+    technology,
+    year
+}) => `
+    <article class="project-card" data-project-id="${id}">
+        <span class="project-card-category">${categoryLabel}</span>
+        <h3>${title}</h3>
+        <p>${description}</p>
+
+        <div class="project-card-details">
+            <span class="project-card-detail">${technology}</span>
+            <span class="project-card-detail">${year}</span>
+        </div>
+    </article>
+`;
+
+const renderProjects = (category = "all") => {
+    const projectsContainer = document.querySelector("#projects-container");
+    const projectsStatus = document.querySelector("#projects-status");
+
+    if (!projectsContainer || !projectsStatus) {
+        return;
+    }
+
+    const visibleProjects = getProjectsByCategory(category);
+
+    projectsContainer.innerHTML = visibleProjects
+        .map(createProjectCardMarkup)
+        .join("");
+
+    const projectWord = visibleProjects.length === 1 ? "project" : "projects";
+    projectsStatus.textContent =
+        `Showing ${visibleProjects.length} ${projectWord}.`;
+};
+
+const updateProjectFilterButtons = (selectedCategory) => {
+    const filterButtons = document.querySelectorAll(".project-filter");
+
+    filterButtons.forEach((button) => {
+        const isSelected = button.dataset.category === selectedCategory;
+
+        button.classList.toggle("is-active", isSelected);
+        button.setAttribute("aria-pressed", String(isSelected));
+    });
+};
+
+const initializeFeaturedProjects = () => {
+    const filterButtons = [...document.querySelectorAll(".project-filter")];
+
+    if (filterButtons.length === 0) {
+        return;
+    }
+
+    const savedCategory =
+        localStorage.getItem(PROJECT_FILTER_STORAGE_KEY) || "all";
+
+    const validCategory = filterButtons.some(
+        (button) => button.dataset.category === savedCategory
+    )
+        ? savedCategory
+        : "all";
+
+    renderProjects(validCategory);
+    updateProjectFilterButtons(validCategory);
+
+    filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const { category } = button.dataset;
+
+            localStorage.setItem(PROJECT_FILTER_STORAGE_KEY, category);
+            renderProjects(category);
+            updateProjectFilterButtons(category);
+        });
+    });
+};
+
+/* =========================================
+   Task 06 - REST API Posts
+   ========================================= */
+
+const POSTS_API_URL = "https://jsonplaceholder.typicode.com/posts";
+const POSTS_DISPLAY_LIMIT = 9;
+
+let loadedPosts = [];
+
+const getPostsElements = () => ({
+    container: document.querySelector("#posts-container"),
+    loading: document.querySelector("#posts-loading"),
+    error: document.querySelector("#posts-error"),
+    empty: document.querySelector("#posts-empty"),
+    noResults: document.querySelector("#posts-no-results"),
+    search: document.querySelector("#posts-search"),
+    reset: document.querySelector("#reset-posts-search"),
+    retry: document.querySelector("#retry-posts"),
+    resultCount: document.querySelector("#posts-result-count")
+});
+
+const setPostsState = (state) => {
+    const {
+        container,
+        loading,
+        error,
+        empty,
+        noResults
+    } = getPostsElements();
+
+    loading.hidden = state !== "loading";
+    error.hidden = state !== "error";
+    empty.hidden = state !== "empty";
+    noResults.hidden = state !== "no-results";
+    container.hidden = state !== "success";
+};
+
+const createPostCard = ({ id, title, body }) => {
+    const article = document.createElement("article");
+    const number = document.createElement("span");
+    const heading = document.createElement("h3");
+    const description = document.createElement("p");
+
+    article.className = "post-card";
+    number.className = "post-card-number";
+
+    number.textContent = `Post ${id}`;
+    heading.textContent = title;
+    description.textContent = body;
+
+    article.append(number, heading, description);
+
+    return article;
+};
+
+const updatePostsResultCount = (count) => {
+    const { resultCount } = getPostsElements();
+    const resultWord = count === 1 ? "result" : "results";
+
+    resultCount.textContent = `${count} ${resultWord} displayed.`;
+};
+
+const renderPosts = (posts) => {
+    const { container } = getPostsElements();
+
+    container.replaceChildren();
+
+    if (loadedPosts.length === 0) {
+        updatePostsResultCount(0);
+        setPostsState("empty");
+        return;
+    }
+
+    if (posts.length === 0) {
+        updatePostsResultCount(0);
+        setPostsState("no-results");
+        return;
+    }
+
+    const postCards = posts.map(createPostCard);
+
+    container.append(...postCards);
+    updatePostsResultCount(posts.length);
+    setPostsState("success");
+};
+
+const filterPosts = (searchValue) => {
+    const normalizedSearchValue = searchValue.trim().toLowerCase();
+
+    if (!normalizedSearchValue) {
+        return [...loadedPosts];
+    }
+
+    return loadedPosts.filter(({ title, body }) =>
+        `${title} ${body}`.toLowerCase().includes(normalizedSearchValue)
+    );
+};
+
+const fetchPosts = async () => {
+    const {
+        container,
+        search,
+        reset,
+        resultCount
+    } = getPostsElements();
+
+    container.replaceChildren();
+    resultCount.textContent = "";
+    search.disabled = true;
+    reset.disabled = true;
+    setPostsState("loading");
+
+    try {
+        const response = await fetch(POSTS_API_URL);
+
+        if (!response.ok) {
+            throw new Error(`HTTP request failed with status ${response.status}`);
+        }
+
+        const posts = await response.json();
+
+        loadedPosts = Array.isArray(posts)
+            ? posts.slice(0, POSTS_DISPLAY_LIMIT)
+            : [];
+
+        search.disabled = loadedPosts.length === 0;
+        reset.disabled = loadedPosts.length === 0;
+
+        renderPosts(loadedPosts);
+    } catch (error) {
+        loadedPosts = [];
+        search.disabled = true;
+        reset.disabled = true;
+        resultCount.textContent = "";
+        setPostsState("error");
+    }
+};
+
+const initializeLatestPosts = () => {
+    const {
+        container,
+        search,
+        reset,
+        retry
+    } = getPostsElements();
+
+    if (!container || !search || !reset || !retry) {
+        return;
+    }
+
+    search.addEventListener("input", () => {
+        const visiblePosts = filterPosts(search.value);
+        renderPosts(visiblePosts);
+    });
+
+    reset.addEventListener("click", () => {
+        search.value = "";
+        renderPosts(loadedPosts);
+        search.focus();
+    });
+
+    retry.addEventListener("click", fetchPosts);
+
+    fetchPosts();
+};
+
 
 /* ========================================
    6. Initialization
@@ -564,6 +886,9 @@ function initializeWebsite() {
     initializeBackToTop();
     initializeActiveNavigation();
     initializeStatisticsCounters();
+    initializeFeaturedProjects();
+    initializeLatestPosts();
+
 }
 
 initializeWebsite();

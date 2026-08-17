@@ -194,6 +194,85 @@
             </div>
         </section>
 
+        <!-- Featured Projects Section -->
+        <section id="projects" class="section projects-section" aria-labelledby="projects-title">
+            <div class="container">
+                <p class="eyebrow-text">Our Work</p>
+                <h2 id="projects-title" class="section-title">Featured Projects</h2>
+                <p class="section-description">
+                    Explore a selection of digital solutions created for different business needs.
+                </p>
+
+                <div class="project-filters" aria-label="Filter projects by category">
+                    <button class="project-filter is-active" type="button" data-category="all" aria-pressed="true">
+                        All
+                    </button>
+
+                    <button class="project-filter" type="button" data-category="web" aria-pressed="false">
+                        Web
+                    </button>
+
+                    <button class="project-filter" type="button" data-category="mobile" aria-pressed="false">
+                        Mobile
+                    </button>
+
+                    <button class="project-filter" type="button" data-category="ui-ux" aria-pressed="false">
+                        UI/UX
+                    </button>
+                </div>
+
+                <p id="projects-status" class="results-status" aria-live="polite"></p>
+
+                <div id="projects-container" class="projects-grid" aria-live="polite"></div>
+            </div>
+        </section>
+
+        <!-- Latest Posts Section -->
+        <section id="posts" class="section posts-section" aria-labelledby="posts-title">
+            <div class="container">
+                <p class="eyebrow-text">Latest Resources</p>
+                <h2 id="posts-title" class="section-title">Latest Posts</h2>
+                <p class="section-description">
+                    Browse helpful articles loaded from the JSONPlaceholder REST API.
+                </p>
+
+                <div class="posts-toolbar">
+                    <div class="search-field">
+                        <label for="posts-search">Search posts</label>
+                        <input id="posts-search" class="form-control" type="search"
+                            placeholder="Search by title or content" autocomplete="off" disabled>
+                    </div>
+
+                    <button id="reset-posts-search" class="button button-secondary" type="button" disabled>
+                        Clear Search
+                    </button>
+                </div>
+
+                <p id="posts-result-count" class="results-status" aria-live="polite"></p>
+
+                <div id="posts-loading" class="request-state" role="status">
+                    Loading latest posts...
+                </div>
+
+                <div id="posts-error" class="request-state request-state-error" role="alert" hidden>
+                    <p>We could not load the latest posts. Please try again.</p>
+                    <button id="retry-posts" class="button button-primary" type="button">
+                        Retry
+                    </button>
+                </div>
+
+                <div id="posts-empty" class="request-state" role="status" hidden>
+                    No posts are currently available.
+                </div>
+
+                <div id="posts-no-results" class="request-state" role="status" hidden>
+                    No matching results were found.
+                </div>
+
+                <div id="posts-container" class="posts-grid"></div>
+            </div>
+        </section>
+
         <section id="statistics" class="section statistics-section">
             <div class="container">
                 <div class="section-heading statistics-heading">
