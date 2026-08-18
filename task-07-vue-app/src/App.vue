@@ -2,6 +2,7 @@
 import SiteHeader from "./components/SiteHeader.vue";
 import HeroSection from "./components/HeroSection.vue";
 import ProjectsSection from "./components/ProjectsSection.vue";
+import PostsSection from "./components/PostsSection.vue";
 </script>
 
 <template>
@@ -12,6 +13,7 @@ import ProjectsSection from "./components/ProjectsSection.vue";
   <main id="main-content">
     <HeroSection />
     <ProjectsSection />
+    <PostsSection />
   </main>
 </template>
 
