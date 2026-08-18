@@ -1,9 +1,34 @@
 <script setup>
+import SiteHeader from "./components/SiteHeader.vue";
+import HeroSection from "./components/HeroSection.vue";
+import ProjectsSection from "./components/ProjectsSection.vue";
 </script>
 
 <template>
-  <main class="setup-page">
-    <h1>NexaTech Vue Application</h1>
-    <p>Vue 3 project setup completed successfully.</p>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <SiteHeader />
+
+  <main id="main-content">
+    <HeroSection />
+    <ProjectsSection />
   </main>
 </template>
+
+<style scoped>
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 1rem;
+  z-index: 200;
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  background-color: #0b2a43;
+  border-radius: 0 0 0.4rem 0.4rem;
+  transform: translateY(-120%);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+</style>

@@ -1,3 +1,18 @@
+:root {
+  --color-primary: #123b5d;
+  --color-primary-dark: #0b2a43;
+  --color-secondary: #0d6798;
+  --color-secondary-dark: #084f75;
+  --color-accent: #55c2e8;
+  --color-text: #1f2933;
+  --color-text-muted: #5f6c78;
+  --color-background: #f5f8fb;
+  --color-surface: #ffffff;
+  --color-border: #dbe4ec;
+  --shadow-sm: 0 4px 14px rgba(18, 59, 93, 0.08);
+  --shadow-md: 0 16px 34px rgba(18, 59, 93, 0.14);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -5,6 +20,7 @@
 }
 
 html {
+  scroll-behavior: smooth;
   font-family:
     Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
@@ -13,8 +29,8 @@ html {
 body {
   min-width: 320px;
   min-height: 100vh;
-  color: #1f2933;
-  background-color: #f5f8fb;
+  color: var(--color-text);
+  background-color: var(--color-background);
 }
 
 button,
@@ -22,15 +38,73 @@ input {
   font: inherit;
 }
 
-.setup-page {
-  display: grid;
-  min-height: 100vh;
-  place-content: center;
-  gap: 1rem;
-  padding: 2rem;
-  text-align: center;
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 3px;
 }
 
-.setup-page h1 {
-  color: #123b5d;
+.container {
+  width: min(1180px, calc(100% - 2rem));
+  margin-inline: auto;
+}
+
+.section {
+  padding: 5rem 0;
+  scroll-margin-top: 90px;
+}
+
+.eyebrow-text {
+  margin-bottom: 0.75rem;
+  color: var(--color-secondary-dark);
+  font-size: 0.8rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.75rem 1.2rem;
+  font-weight: 800;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.button-primary {
+  color: #ffffff;
+  background-color: var(--color-secondary);
+}
+
+.button-primary:hover {
+  background-color: var(--color-secondary-dark);
+}
+
+.button-secondary {
+  color: var(--color-primary);
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+.button-secondary:hover {
+  border-color: var(--color-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
