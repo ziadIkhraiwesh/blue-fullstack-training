@@ -1,3 +1,7 @@
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
+
 <template>
   <section id="home" class="hero-section">
     <div class="container hero-layout">
@@ -12,13 +16,13 @@
         </p>
 
         <div class="hero-actions">
-          <a class="button button-primary" href="#projects">
+          <RouterLink class="button button-primary" to="/projects">
             Explore Projects
-          </a>
+          </RouterLink>
 
-          <a class="button button-secondary" href="#posts">
+          <RouterLink class="button button-secondary" to="/posts">
             View Latest Posts
-          </a>
+          </RouterLink>
         </div>
       </div>
 

@@ -1,13 +1,43 @@
+<script setup>
+import { RouterLink } from "vue-router";
+</script>
+
 <template>
   <header class="site-header">
     <div class="container header-content">
-      <a class="logo" href="#home">NexaTech<span>.</span></a>
+      <RouterLink
+        class="logo"
+        to="/"
+        exact-active-class="is-logo-active"
+      >
+        NexaTech<span>.</span>
+      </RouterLink>
 
       <nav aria-label="Main navigation">
         <ul class="navigation-list">
-          <li><a href="#home">Home</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#posts">Posts</a></li>
+          <li>
+            <RouterLink to="/" exact-active-class="is-active">
+              Home
+            </RouterLink>
+          </li>
+
+          <li>
+            <RouterLink to="/projects" active-class="is-active">
+              Projects
+            </RouterLink>
+          </li>
+
+          <li>
+            <RouterLink to="/posts" active-class="is-active">
+              Posts
+            </RouterLink>
+          </li>
+
+          <li>
+            <RouterLink to="/contact" active-class="is-active">
+              Contact
+            </RouterLink>
+          </li>
         </ul>
       </nav>
     </div>
@@ -51,16 +81,36 @@
 }
 
 .navigation-list a {
+  position: relative;
+  padding: 0.5rem 0;
   color: var(--color-primary);
   font-weight: 700;
   text-decoration: none;
 }
 
-.navigation-list a:hover {
-  color: var(--color-secondary);
+.navigation-list a::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  content: "";
+  background-color: var(--color-secondary);
+  border-radius: 999px;
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
 }
 
-@media (max-width: 480px) {
+.navigation-list a:hover,
+.navigation-list a.is-active {
+  color: var(--color-secondary-dark);
+}
+
+.navigation-list a.is-active::after {
+  transform: scaleX(1);
+}
+
+@media (max-width: 600px) {
   .header-content {
     align-items: flex-start;
     flex-direction: column;
