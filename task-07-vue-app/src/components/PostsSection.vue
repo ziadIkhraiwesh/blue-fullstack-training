@@ -1,13 +1,40 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted } from "vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
+import { usePosts } from "../composables/usePosts";
 
-const POSTS_API_URL = "https://jsonplaceholder.typicode.com/posts";
-const POSTS_LIMIT = 9;
+const route = useRoute();
+const router = useRouter();
 
-const posts = ref([]);
-const isLoading = ref(false);
-const errorMessage = ref("");
-const searchQuery = ref("");
+const {
+  posts,
+  isLoading,
+  errorMessage,
+  loadPosts
+} = usePosts();
+
+const searchQuery = computed({
+  get() {
+    return typeof route.query.q === "string"
+      ? route.query.q
+      : "";
+  },
+
+  set(value) {
+    const updatedQuery = { ...route.query };
+
+    if (value) {
+      updatedQuery.q = value;
+    } else {
+      delete updatedQuery.q;
+    }
+
+    router.replace({
+      name: "posts",
+      query: updatedQuery
+    });
+  }
+});
 
 const filteredPosts = computed(() => {
   const normalizedSearch = searchQuery.value.trim().toLowerCase();
@@ -28,36 +55,11 @@ const resultMessage = computed(() => {
   return `${count} ${resultWord} displayed.`;
 });
 
-const fetchPosts = async () => {
-  isLoading.value = true;
-  errorMessage.value = "";
-  posts.value = [];
-
-  try {
-    const response = await fetch(POSTS_API_URL);
-
-    if (!response.ok) {
-      throw new Error(`Request failed with status ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    posts.value = Array.isArray(data)
-      ? data.slice(0, POSTS_LIMIT)
-      : [];
-  } catch (error) {
-    errorMessage.value =
-      "We could not load the latest posts. Please try again.";
-  } finally {
-    isLoading.value = false;
-  }
-};
-
 const clearSearch = () => {
   searchQuery.value = "";
 };
 
-onMounted(fetchPosts);
+onMounted(loadPosts);
 </script>
 
 <template>
@@ -75,23 +77,15 @@ onMounted(fetchPosts);
         Loading latest posts...
       </div>
 
-      <div
-        v-else-if="errorMessage"
-        class="request-state error-state"
-        role="alert"
-      >
+      <div v-else-if="errorMessage" class="request-state error-state" role="alert">
         <p>{{ errorMessage }}</p>
 
-        <button class="button button-primary" type="button" @click="fetchPosts">
+        <button class="button button-primary" type="button" @click="loadPosts">
           Retry
         </button>
       </div>
 
-      <div
-        v-else-if="posts.length === 0"
-        class="request-state"
-        role="status"
-      >
+      <div v-else-if="posts.length === 0" class="request-state" role="status">
         No posts are currently available.
       </div>
 
@@ -100,21 +94,12 @@ onMounted(fetchPosts);
           <div class="search-field">
             <label for="post-search">Search posts by title</label>
 
-            <input
-              id="post-search"
-              v-model="searchQuery"
-              type="search"
-              placeholder="Enter a post title"
-              autocomplete="off"
-            >
+            <input id="post-search" v-model="searchQuery" type="search" placeholder="Enter a post title"
+              autocomplete="off">
           </div>
 
-          <button
-            class="button button-secondary"
-            type="button"
-            :disabled="searchQuery.length === 0"
-            @click="clearSearch"
-          >
+          <button class="button button-secondary" type="button" :disabled="searchQuery.length === 0"
+            @click="clearSearch">
             Clear Search
           </button>
         </div>
@@ -123,23 +108,22 @@ onMounted(fetchPosts);
           {{ resultMessage }}
         </p>
 
-        <div
-          v-if="filteredPosts.length === 0"
-          class="request-state"
-          role="status"
-        >
+        <div v-if="filteredPosts.length === 0" class="request-state" role="status">
           No matching posts were found.
         </div>
 
         <div v-else class="posts-grid">
-          <article
-            v-for="post in filteredPosts"
-            :key="post.id"
-            class="post-card"
-          >
+          <article v-for="post in filteredPosts" :key="post.id" class="post-card">
             <span>Post {{ post.id }}</span>
             <h3>{{ post.title }}</h3>
             <p>{{ post.body }}</p>
+            <RouterLink class="read-more" :to="{
+              name: 'post-details',
+              params: { id: post.id },
+              query: searchQuery ? { from: searchQuery } : {}
+            }">
+              Read More
+            </RouterLink>
           </article>
         </div>
       </div>
@@ -148,6 +132,23 @@ onMounted(fetchPosts);
 </template>
 
 <style scoped>
+.read-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  margin-top: 1.25rem;
+  padding: 0.65rem 1rem;
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+  background-color: var(--color-secondary);
+  border-radius: 0.4rem;
+}
+
+.read-more:hover {
+  background-color: var(--color-secondary-dark);
+}
 .posts-section {
   background-color: var(--color-background);
 }
