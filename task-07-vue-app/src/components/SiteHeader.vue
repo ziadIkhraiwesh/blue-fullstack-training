@@ -1,15 +1,12 @@
 <script setup>
-import { RouterLink } from "vue-router";
-</script>
+import { RouterLink, useRoute } from "vue-router";
 
+const route = useRoute();
+</script>
 <template>
   <header class="site-header">
     <div class="container header-content">
-      <RouterLink
-        class="logo"
-        to="/"
-        exact-active-class="is-logo-active"
-      >
+      <RouterLink class="logo" to="/" exact-active-class="is-logo-active">
         NexaTech<span>.</span>
       </RouterLink>
 
@@ -28,7 +25,7 @@ import { RouterLink } from "vue-router";
           </li>
 
           <li>
-            <RouterLink to="/posts" active-class="is-active">
+            <RouterLink to="/posts" active-class="is-active" :class="{ 'is-active': route.path.startsWith('/posts') }">
               Posts
             </RouterLink>
           </li>

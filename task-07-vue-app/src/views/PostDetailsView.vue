@@ -1,0 +1,172 @@
+<script setup>
+import { computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { usePost } from "../composables/usePosts";
+
+const route = useRoute();
+const router = useRouter();
+
+const {
+  post,
+  isLoading,
+  errorMessage,
+  isNotFound,
+  loadPost
+} = usePost();
+
+const postsRoute = computed(() => ({
+  name: "posts",
+  query:
+    typeof route.query.from === "string" && route.query.from
+      ? { q: route.query.from }
+      : {}
+}));
+
+const goBackToPosts = () => {
+  router.push(postsRoute.value);
+};
+
+const retryPost = () => {
+  loadPost(route.params.id);
+};
+
+watch(
+  () => route.params.id,
+  (postId) => {
+    loadPost(postId);
+  },
+  { immediate: true }
+);
+</script>
+
+<template>
+  <section class="section post-details-view">
+    <div class="container">
+      <button
+        class="back-button"
+        type="button"
+        @click="goBackToPosts"
+      >
+        ← Back to Posts
+      </button>
+
+      <div v-if="isLoading" class="request-state" role="status">
+        Loading post details...
+      </div>
+
+      <div
+        v-else-if="errorMessage"
+        class="request-state error-state"
+        role="alert"
+      >
+        <p>{{ errorMessage }}</p>
+
+        <button
+          class="button button-primary"
+          type="button"
+          @click="retryPost"
+        >
+          Retry
+        </button>
+      </div>
+
+      <div
+        v-else-if="isNotFound"
+        class="request-state"
+        role="status"
+      >
+        <p>The requested post could not be found.</p>
+
+        <button
+          class="button button-primary"
+          type="button"
+          @click="goBackToPosts"
+        >
+          Browse Posts
+        </button>
+      </div>
+
+      <article v-else-if="post" class="post-details-card">
+        <p class="eyebrow-text">Dynamic Post Route</p>
+        <span class="post-id">Post ID: {{ post.id }}</span>
+
+        <h1>{{ post.title }}</h1>
+        <p class="post-body">{{ post.body }}</p>
+      </article>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.post-details-view {
+  min-height: calc(100vh - 72px);
+}
+
+.back-button {
+  min-height: 44px;
+  margin-bottom: 2rem;
+  padding: 0.65rem 1rem;
+  color: var(--color-primary);
+  font-weight: 800;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  border-color: var(--color-secondary);
+}
+
+.request-state {
+  padding: 2rem;
+  color: var(--color-primary);
+  text-align: center;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+}
+
+.error-state {
+  color: #8a1c1c;
+  background-color: #fff2f2;
+  border-color: #e6a8a8;
+}
+
+.error-state p,
+.request-state p {
+  margin-bottom: 1rem;
+}
+
+.post-details-card {
+  max-width: 850px;
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+.post-id {
+  display: inline-block;
+  margin-bottom: 1.25rem;
+  padding: 0.4rem 0.75rem;
+  color: var(--color-secondary-dark);
+  font-weight: 900;
+  background-color: #e5f3f9;
+  border-radius: 0.4rem;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  line-height: 1.2;
+}
+
+.post-body {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1.9;
+}
+</style>
