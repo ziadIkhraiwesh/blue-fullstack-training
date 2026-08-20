@@ -70,15 +70,6 @@ watch(
       <div v-else-if="isNotFound" class="request-state" role="status">
         <p>The requested post could not be found.</p>
 
-        <button v-if="post" class="favorite-button" type="button"
-          :class="{ 'is-favorite': postsStore.isFavorite(post.id) }" :aria-pressed="postsStore.isFavorite(post.id)"
-          @click="postsStore.toggleFavorite(post.id)">
-          {{
-            postsStore.isFavorite(post.id)
-              ? "★ Remove Favorite"
-              : "☆ Add Favorite"
-          }}
-        </button>
 
         <button class="button button-primary" type="button" @click="goBackToPosts">
           Browse Posts
@@ -91,6 +82,15 @@ watch(
 
         <h1>{{ post.title }}</h1>
         <p class="post-body">{{ post.body }}</p>
+        <button v-if="post" class="favorite-button" type="button"
+          :class="{ 'is-favorite': postsStore.isFavorite(post.id) }" :aria-pressed="postsStore.isFavorite(post.id)"
+          @click="postsStore.toggleFavorite(post.id)">
+          {{
+            postsStore.isFavorite(post.id)
+              ? "★ Remove Favorite"
+              : "☆ Add Favorite"
+          }}
+        </button>
       </article>
     </div>
   </section>
@@ -168,6 +168,7 @@ h1 {
   font-size: 1.1rem;
   line-height: 1.9;
 }
+
 .favorite-button {
   min-height: 44px;
   margin-top: 1rem;
