@@ -30,8 +30,18 @@ const postsStore = usePostsStore();
           </li>
 
           <li>
-            <RouterLink to="/posts" active-class="is-active" :class="{ 'is-active': route.path.startsWith('/posts') }">
+            <RouterLink to="/posts" active-class="is-active" :class="{
+              'is-active':
+                route.path.startsWith('/posts') &&
+                route.name !== 'create-post'
+            }">
               Posts
+            </RouterLink>
+
+          </li>
+          <li>
+            <RouterLink to="/posts/create" active-class="is-active">
+              Create Post
             </RouterLink>
           </li>
           <RouterLink to="/favorites" active-class="is-active">
@@ -117,6 +127,7 @@ const postsStore = usePostsStore();
 .navigation-list a.is-active::after {
   transform: scaleX(1);
 }
+
 .favorite-count {
   display: inline-flex;
   align-items: center;
