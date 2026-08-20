@@ -45,45 +45,63 @@ npm run preview
 
 ## Component Structure
 
+
+
 ```text
 task-07-vue-app/
 |-- public/
+|   |-- favicon.svg
+|   `-- icons.svg
 |-- screenshots/
 |   |-- task-07-vue-page.png
 |   |-- task-07-filter-event.png
 |   |-- task-07-api-posts.png
 |   |-- task-08-navigation.png
 |   |-- task-08-post-details.png
-|   `-- task-08-route-query.png
+|   |-- task-08-route-query.png
+|   |-- task-09-favorite-count.png
+|   |-- task-09-favorites-view.png
+|   |-- task-09-invalid-form.png
+|   `-- task-09-successful-post.png
 |-- src/
 |   |-- assets/
+|   |   |-- hero.png
+|   |   |-- vite.svg
+|   |   `-- vue.svg
 |   |-- components/
-|   |   |-- SiteHeader.vue
 |   |   |-- HeroSection.vue
-|   |   |-- ProjectFilter.vue
+|   |   |-- PostCard.vue
+|   |   |-- PostsSection.vue
 |   |   |-- ProjectCard.vue
+|   |   |-- ProjectFilter.vue
 |   |   |-- ProjectsSection.vue
-|   |   `-- PostsSection.vue
-|   |-- composables/
-|   |   `-- usePosts.js
+|   |   `-- SiteHeader.vue
 |   |-- router/
 |   |   `-- index.js
+|   |-- services/
+|   |   `-- postsApi.js
+|   |-- stores/
+|   |   `-- posts.js
 |   |-- views/
-|   |   |-- HomeView.vue
-|   |   |-- ProjectsView.vue
-|   |   |-- PostsView.vue
-|   |   |-- PostDetailsView.vue
 |   |   |-- ContactView.vue
-|   |   `-- NotFoundView.vue
+|   |   |-- CreatePostView.vue
+|   |   |-- FavoritesView.vue
+|   |   |-- HomeView.vue
+|   |   |-- NotFoundView.vue
+|   |   |-- PostDetailsView.vue
+|   |   |-- PostsView.vue
+|   |   `-- ProjectsView.vue
 |   |-- App.vue
 |   |-- main.js
 |   `-- style.css
+|-- .gitignore
 |-- index.html
-|-- package.json
 |-- package-lock.json
-|-- vite.config.js
-`-- README.md
+|-- package.json
+|-- README.md
+`-- vite.config.js
 ```
+
 
 ## Vue Components
 
@@ -322,9 +340,145 @@ The following behavior was tested:
 
 ![Task 08 route query search](screenshots/task-08-route-query.png)
 
+## Task 09 - Pinia, Forms & API Mutations
+
+During Task 09, I extended the existing Vue application with shared state management, persistent favorites, validated form handling, and a simulated API mutation.
+
+### Pinia Store Architecture
+
+Pinia was installed and registered with the existing Vue application.
+
+The shared posts state is managed in:
+
+`src/stores/posts.js`
+
+The store contains shared state for:
+
+* Posts loaded from the API.
+* Posts loading and error states.
+* The currently selected post.
+* Favorite post IDs.
+* Create-post submission, success, and error states.
+
+The store also provides getters for the favorite count, favorite posts, and checking whether a specific post is currently selected as a favorite.
+
+Reusable API request functions are kept separately in:
+
+`src/services/postsApi.js`
+
+This service contains the GET and POST request logic, while the Pinia store remains the single source of truth for shared posts and favorites state. The previous posts composable was removed to avoid duplicating API and shared-state logic.
+
+Temporary form fields and field-level validation messages remain local to `CreatePostView.vue` because they are only required by that page.
+
+### Persistent Favorites
+
+A favorite action was added to post cards and the Post Details view.
+
+The implementation includes:
+
+* Adding and removing favorite posts.
+* Immediate synchronization between Posts, Post Details, Favorites, and the shared header count.
+* A dedicated Favorites route and view.
+* An empty state when no posts are selected.
+* Persistence of only the favorite post IDs in `localStorage`.
+* Restoration of saved favorites when the application starts.
+* Preservation of favorites after a browser refresh.
+
+### Create Post Form
+
+A new route-level view was added at:
+
+`#/posts/create`
+
+The form uses `v-model` and includes:
+
+* Title.
+* Body / Content.
+* User ID.
+* Field-level validation messages.
+* Accessible invalid states using `aria-invalid` and `aria-describedby`.
+* A live character counter for the post body.
+* Disabled and loading button states during submission.
+* Prevention of duplicate submissions.
+
+### Validation Rules
+
+The following rules are applied before submission:
+
+* Title is required and cannot contain whitespace only.
+* Title must contain between 5 and 100 characters.
+* Body is required and cannot contain whitespace only.
+* Body must contain between 20 and 500 characters.
+* User ID is required.
+* User ID must be a positive whole number.
+
+### POST API Mutation
+
+Valid form data is submitted to:
+
+`https://jsonplaceholder.typicode.com/posts`
+
+The request uses `fetch()`, `async/await`, the `POST` method, a JSON request body, and the correct `Content-Type` header.
+
+The interface handles:
+
+* Submitting/loading state.
+* Successful submission and returned record ID.
+* Failed submission with preserved form values.
+* Retry after an API error.
+* Resetting the form through a deliberate Create Another Post action.
+* Duplicate-submit prevention.
+
+JSONPlaceholder simulates post creation and usually returns an ID such as `101`. The created post is not permanently stored on the JSONPlaceholder server.
+
+### Testing Completed
+
+The following scenarios were tested:
+
+* Posts loading after Pinia integration.
+* Favorites synchronization across multiple routes.
+* Favorite persistence after browser refresh.
+* Favorites empty and content states.
+* Empty, whitespace-only, short, long, and invalid form values.
+* Valid POST submission and returned result.
+* Forced API failure and Retry behavior.
+* Preservation of form values after failure.
+* Existing Vue Router navigation and dynamic post routes.
+* Query-string search and direct page refresh.
+* Not Found and invalid post states.
+* Desktop, tablet, and mobile layouts.
+* Production build and browser console output.
+
+### Task 09 Screenshots
+
+#### Shared Favorite Count
+
+![Task 09 favorite count](screenshots/task-09-favorite-count.png)
+
+#### Favorites View
+
+![Task 09 favorites view](screenshots/task-09-favorites-view.png)
+
+#### Invalid Create Post Form
+
+![Task 09 invalid form](screenshots/task-09-invalid-form.png)
+
+#### Successful POST Submission
+
+![Task 09 successful post](screenshots/task-09-successful-post.png)
+
+### Challenges and Blockers
+
+The favorite action was initially placed inside the Post Details Not Found state, so it did not appear for valid posts. The button was moved into the successful post-details state and retested across the Posts, Post Details, and Favorites views.
+
+No remaining blockers were encountered during Task 09.
+
+
 ## Known Limitations
 
-- The posts section depends on the external JSONPlaceholder API and requires an internet connection.
-- JSONPlaceholder provides demonstration content rather than real company posts.
-- The application does not use Vue Router or a state-management library because they are outside the scope of Task 07.
-- The application uses hash-based routing so route refreshes remain compatible with static hosting.
+* The application uses hash-based routing to support direct refresh and client-side navigation when deployed to a static hosting service without additional server configuration.
+* JSONPlaceholder simulates successful POST requests but does not permanently save newly created posts on the server.
+* Favorite post IDs are stored in the browser's `localStorage`, so favorites are specific to the current browser and device and are not synchronized between different users or devices.
+* The displayed post content is provided by the JSONPlaceholder testing API and is used only for demonstrating API integration and Vue state management.
+
+No remaining implementation blockers were encountered.
