@@ -1,40 +1,49 @@
 <script setup>
 import { computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { usePost } from "../composables/usePosts";
+import { storeToRefs } from "pinia";
+import {
+  useRoute,
+  useRouter
+} from "vue-router";
+import { usePostsStore } from "../stores/posts";
 
 const route = useRoute();
 const router = useRouter();
+const postsStore = usePostsStore();
 
 const {
-  post,
-  isLoading,
-  errorMessage,
-  isNotFound,
-  loadPost
-} = usePost();
+  currentPost: post,
+  isPostLoading: isLoading,
+  postErrorMessage: errorMessage
+} = storeToRefs(postsStore);
 
-const postsRoute = computed(() => ({
-  name: "posts",
-  query:
-    typeof route.query.from === "string" && route.query.from
-      ? { q: route.query.from }
-      : {}
-}));
+const isNotFound = computed(() =>
+  errorMessage.value
+    .toLowerCase()
+    .includes("could not be found")
+);
 
-const goBackToPosts = () => {
-  router.push(postsRoute.value);
+const loadRequestedPost = () => {
+  postsStore.loadPostById(route.params.id);
 };
 
-const retryPost = () => {
-  loadPost(route.params.id);
+const goBackToPosts = () => {
+  const previousSearch =
+    typeof route.query.from === "string"
+      ? route.query.from
+      : "";
+
+  router.push({
+    name: "posts",
+    query: previousSearch
+      ? { q: previousSearch }
+      : {}
+  });
 };
 
 watch(
   () => route.params.id,
-  (postId) => {
-    loadPost(postId);
-  },
+  loadRequestedPost,
   { immediate: true }
 );
 </script>
@@ -42,11 +51,7 @@ watch(
 <template>
   <section class="section post-details-view">
     <div class="container">
-      <button
-        class="back-button"
-        type="button"
-        @click="goBackToPosts"
-      >
+      <button class="back-button" type="button" @click="goBackToPosts">
         ← Back to Posts
       </button>
 
@@ -54,34 +59,28 @@ watch(
         Loading post details...
       </div>
 
-      <div
-        v-else-if="errorMessage"
-        class="request-state error-state"
-        role="alert"
-      >
+      <div v-else-if="errorMessage" class="request-state error-state" role="alert">
         <p>{{ errorMessage }}</p>
 
-        <button
-          class="button button-primary"
-          type="button"
-          @click="retryPost"
-        >
+        <button class="button button-primary" type="button" @click="retryPost">
           Retry
         </button>
       </div>
 
-      <div
-        v-else-if="isNotFound"
-        class="request-state"
-        role="status"
-      >
+      <div v-else-if="isNotFound" class="request-state" role="status">
         <p>The requested post could not be found.</p>
 
-        <button
-          class="button button-primary"
-          type="button"
-          @click="goBackToPosts"
-        >
+        <button v-if="post" class="favorite-button" type="button"
+          :class="{ 'is-favorite': postsStore.isFavorite(post.id) }" :aria-pressed="postsStore.isFavorite(post.id)"
+          @click="postsStore.toggleFavorite(post.id)">
+          {{
+            postsStore.isFavorite(post.id)
+              ? "★ Remove Favorite"
+              : "☆ Add Favorite"
+          }}
+        </button>
+
+        <button class="button button-primary" type="button" @click="goBackToPosts">
           Browse Posts
         </button>
       </div>
@@ -168,5 +167,28 @@ h1 {
   color: var(--color-text-muted);
   font-size: 1.1rem;
   line-height: 1.9;
+}
+.favorite-button {
+  min-height: 44px;
+  margin-top: 1rem;
+  padding: 0.7rem 1rem;
+  color: var(--color-primary);
+  font-weight: 800;
+  cursor: pointer;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+}
+
+.favorite-button:hover,
+.favorite-button.is-favorite {
+  color: #704d00;
+  background-color: #fff4c2;
+  border-color: #d6a800;
+}
+
+.favorite-button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
 }
 </style>

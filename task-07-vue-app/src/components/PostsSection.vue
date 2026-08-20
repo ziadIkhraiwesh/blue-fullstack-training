@@ -1,17 +1,22 @@
 <script setup>
 import { computed, onMounted } from "vue";
-import { RouterLink, useRoute, useRouter } from "vue-router";
-import { usePosts } from "../composables/usePosts";
+import { storeToRefs } from "pinia";
+import {
+  RouterLink,
+  useRoute,
+  useRouter
+} from "vue-router";
+import { usePostsStore } from "../stores/posts";
 
 const route = useRoute();
 const router = useRouter();
+const postsStore = usePostsStore();
 
 const {
   posts,
   isLoading,
-  errorMessage,
-  loadPosts
-} = usePosts();
+  errorMessage
+} = storeToRefs(postsStore);
 
 const searchQuery = computed({
   get() {
@@ -37,7 +42,8 @@ const searchQuery = computed({
 });
 
 const filteredPosts = computed(() => {
-  const normalizedSearch = searchQuery.value.trim().toLowerCase();
+  const normalizedSearch =
+    searchQuery.value.trim().toLowerCase();
 
   if (!normalizedSearch) {
     return posts.value;
@@ -59,9 +65,12 @@ const clearSearch = () => {
   searchQuery.value = "";
 };
 
-onMounted(loadPosts);
+onMounted(() => {
+  if (posts.value.length === 0) {
+    postsStore.loadPosts();
+  }
+});
 </script>
-
 <template>
   <section id="posts" class="section posts-section">
     <div class="container">
@@ -80,7 +89,7 @@ onMounted(loadPosts);
       <div v-else-if="errorMessage" class="request-state error-state" role="alert">
         <p>{{ errorMessage }}</p>
 
-        <button class="button button-primary" type="button" @click="loadPosts">
+        <button class="button button-primary" type="button" @click="loadRequestedPost">
           Retry
         </button>
       </div>
@@ -115,6 +124,14 @@ onMounted(loadPosts);
         <div v-else class="posts-grid">
           <article v-for="post in filteredPosts" :key="post.id" class="post-card">
             <span>Post {{ post.id }}</span>
+            <button class="favorite-button" type="button" :class="{ 'is-favorite': postsStore.isFavorite(post.id) }"
+              :aria-pressed="postsStore.isFavorite(post.id)" @click="postsStore.toggleFavorite(post.id)">
+              {{
+                postsStore.isFavorite(post.id)
+                  ? "★ Remove Favorite"
+                  : "☆ Add Favorite"
+              }}
+            </button>
             <h3>{{ post.title }}</h3>
             <p>{{ post.body }}</p>
             <RouterLink class="read-more" :to="{
@@ -149,6 +166,7 @@ onMounted(loadPosts);
 .read-more:hover {
   background-color: var(--color-secondary-dark);
 }
+
 .posts-section {
   background-color: var(--color-background);
 }
@@ -260,6 +278,31 @@ button:disabled {
 .post-card p {
   color: var(--color-text-muted);
   line-height: 1.7;
+}
+
+.favorite-button {
+  display: block;
+  min-height: 44px;
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.85rem;
+  color: var(--color-primary);
+  font-weight: 800;
+  cursor: pointer;
+  background-color: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: 0.4rem;
+}
+
+.favorite-button:hover,
+.favorite-button.is-favorite {
+  color: #704d00;
+  background-color: #fff4c2;
+  border-color: #d6a800;
+}
+
+.favorite-button:focus-visible {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
 }
 
 @media (max-width: 1024px) {

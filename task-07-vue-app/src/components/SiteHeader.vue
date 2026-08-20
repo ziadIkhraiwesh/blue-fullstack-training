@@ -1,7 +1,12 @@
 <script setup>
-import { RouterLink, useRoute } from "vue-router";
+import {
+  RouterLink,
+  useRoute
+} from "vue-router";
+import { usePostsStore } from "../stores/posts";
 
 const route = useRoute();
+const postsStore = usePostsStore();
 </script>
 <template>
   <header class="site-header">
@@ -29,6 +34,12 @@ const route = useRoute();
               Posts
             </RouterLink>
           </li>
+          <RouterLink to="/favorites" active-class="is-active">
+            Favorites
+            <span class="favorite-count">
+              {{ postsStore.favoriteCount }}
+            </span>
+          </RouterLink>
 
           <li>
             <RouterLink to="/contact" active-class="is-active">
@@ -105,6 +116,20 @@ const route = useRoute();
 
 .navigation-list a.is-active::after {
   transform: scaleX(1);
+}
+.favorite-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  margin-left: 0.25rem;
+  padding: 0.15rem 0.4rem;
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 900;
+  background-color: var(--color-secondary);
+  border-radius: 999px;
 }
 
 @media (max-width: 600px) {
