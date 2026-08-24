@@ -1,58 +1,327 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Task 11 – Laravel REST API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Project Overview
 
-## About Laravel
+This project is a REST API developed with PHP and Laravel as part of Task 11 of the Blue Full-Stack Development Training Program.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+The objective of this task is to understand Laravel project structure, API routing, controllers, JSON responses, HTTP status codes, request validation, and API testing using Postman.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The API provides health information, trainee profile information, technical skills, training tasks, individual task details, and a validated contact endpoint.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Technologies and Tools
 
-## Learning Laravel
+- PHP 8.3.30
+- Laravel 13.26.1
+- Composer 2.9.4
+- SQLite
+- Postman
+- Visual Studio Code
+- Git
+- GitHub
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Project Structure
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```text
+task-11-laravel-api/
+|-- app/
+|   `-- Http/
+|       `-- Controllers/
+|           |-- ContactController.php
+|           |-- Controller.php
+|           |-- HealthController.php
+|           `-- TrainingController.php
+|-- bootstrap/
+|   |-- app.php
+|   `-- cache/
+|-- config/
+|-- database/
+|   |-- database.sqlite
+|   `-- migrations/
+|-- public/
+|-- resources/
+|-- routes/
+|   |-- api.php
+|   `-- web.php
+|-- storage/
+|-- tests/
+|-- .env.example
+|-- artisan
+|-- composer.json
+`-- README.md
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Important Directories
 
-## Contributing
+- `app/Http/Controllers`: Contains the controllers responsible for processing API requests and returning JSON responses.
+- `routes/api.php`: Contains all API endpoint definitions.
+- `bootstrap/app.php`: Registers the API routes and configures the Laravel application.
+- `config`: Contains Laravel application configuration files.
+- `database`: Contains database migrations and the local SQLite database file.
+- `public`: Contains the application entry point.
+- `storage`: Contains logs, cache files, and generated framework files.
+- `tests`: Contains automated application tests.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Installation and Setup
 
-## Code of Conduct
+### 1. Clone the repository
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+git clone https://github.com/ziadIkhraiwesh/blue-fullstack-training.git
+```
 
-## Security Vulnerabilities
+### 2. Open the Laravel project
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+cd blue-fullstack-training/task-11-laravel-api
+```
 
-## License
+### 3. Install PHP dependencies
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+composer install
+```
+
+### 4. Create the environment file
+
+In Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+### 5. Generate the application key
+
+```bash
+php artisan key:generate
+```
+
+### 6. Create the SQLite database
+
+In Windows PowerShell:
+
+```powershell
+New-Item database/database.sqlite -ItemType File -Force
+```
+
+### 7. Run database migrations
+
+```bash
+php artisan migrate
+```
+
+### 8. Start the Laravel development server
+
+```bash
+php artisan serve
+```
+
+The application will run at:
+
+```text
+http://127.0.0.1:8000
+```
+
+The API base URL is:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+## API Endpoints
+
+| Method | Endpoint | Description | Successful Status |
+|---|---|---|---|
+| `GET` | `/api/health` | Returns the API health status | `200 OK` |
+| `GET` | `/api/profile` | Returns trainee profile information | `200 OK` |
+| `GET` | `/api/skills` | Returns a list of technical skills | `200 OK` |
+| `GET` | `/api/training/tasks` | Returns all training tasks | `200 OK` |
+| `GET` | `/api/training/tasks/{id}` | Returns one training task by ID | `200 OK` |
+| `POST` | `/api/contact` | Validates and processes contact data | `201 Created` |
+
+If a requested training task does not exist, the API returns:
+
+```text
+404 Not Found
+```
+
+If contact-form validation fails, the API returns:
+
+```text
+422 Unprocessable Content
+```
+
+## Example Successful Response
+
+Request:
+
+```http
+GET /api/health
+```
+
+Response:
+
+```json
+{
+  "status": "success",
+  "application_name": "Laravel",
+  "message": "Laravel API is running successfully."
+}
+```
+
+## Example Task Not Found Response
+
+Request:
+
+```http
+GET /api/training/tasks/999
+```
+
+Response:
+
+```json
+{
+  "status": "error",
+  "message": "Training task not found."
+}
+```
+
+## Contact Endpoint
+
+Request:
+
+```http
+POST /api/contact
+```
+
+Required headers:
+
+```text
+Accept: application/json
+Content-Type: application/json
+```
+
+Example valid request body:
+
+```json
+{
+  "name": "Ziad Ikhraiwesh",
+  "email": "ziad@example.com",
+  "subject": "Laravel Training Request",
+  "message": "I am testing the Laravel contact API validation endpoint."
+}
+```
+
+Example successful response:
+
+```json
+{
+  "status": "success",
+  "message": "Contact request received successfully.",
+  "data": {
+    "name": "Ziad Ikhraiwesh",
+    "email": "ziad@example.com",
+    "subject": "Laravel Training Request",
+    "message": "I am testing the Laravel contact API validation endpoint."
+  }
+}
+```
+
+## Contact Validation Rules
+
+| Field | Rules |
+|---|---|
+| `name` | Required, string, maximum 100 characters |
+| `email` | Required, valid email address, maximum 255 characters |
+| `subject` | Optional, string, maximum 150 characters |
+| `message` | Required, string, minimum 10 and maximum 1000 characters |
+
+Example invalid request:
+
+```json
+{
+  "name": "",
+  "email": "not-an-email",
+  "subject": "Validation Test",
+  "message": "short"
+}
+```
+
+Laravel returns a `422 Unprocessable Content` response containing field-level validation errors.
+
+## API Testing
+
+All implemented endpoints were tested using Postman.
+
+The following scenarios were verified:
+
+- Successful health response.
+- Successful trainee profile response.
+- Successful skills response.
+- Successful training tasks response.
+- Successful individual task response.
+- Missing task response with status code `404`.
+- Successful contact submission with status code `201`.
+- Invalid contact submission with status code `422`.
+
+## Screenshots
+
+### Laravel Application Running
+
+![Laravel application running](screenshots/task-11-laravel-running.png)
+
+### Health Endpoint
+
+![Health endpoint response](screenshots/task-11-health-response.png)
+
+### Training Tasks Endpoint
+
+![Training tasks response](screenshots/task-11-tasks-response.png)
+
+### Task Not Found Response
+
+![Task not found response](screenshots/task-11-task-not-found.png)
+
+### Successful Contact Request
+
+![Successful contact request](screenshots/task-11-contact-success.png)
+
+### Contact Validation Errors
+
+![Contact validation errors](screenshots/task-11-contact-validation-error.png)
+
+## What I Learned
+
+During this task, I learned how to:
+
+- Set up and run a Laravel project.
+- Understand the main Laravel project directories.
+- Register API routes inside `routes/api.php`.
+- Connect API routes to controller methods.
+- Return structured JSON responses.
+- Use appropriate HTTP status codes.
+- Retrieve a single resource using a route parameter.
+- Return a custom `404` response when a resource is not found.
+- Validate JSON request data using Laravel validation.
+- Test successful and unsuccessful API requests using Postman.
+- Manage Laravel dependencies using Composer.
+
+## Challenges and Solutions
+
+During the initial setup, Laravel could not write to the `bootstrap/cache` directory because the project was located inside a OneDrive folder. I corrected the directory permissions and verified that Laravel could write to the folder.
+
+I also encountered an error because the SQLite database file did not exist. I created `database/database.sqlite` and ran the Laravel migrations successfully.
+
+After resolving these setup issues, the Laravel application and all required API endpoints worked correctly.
+
+## Known Limitations
+
+- The training tasks, profile, and skills currently use sample data defined inside the application instead of persistent database records.
+- The contact endpoint validates and returns the submitted data but does not permanently save it or send an email.
+- Authentication and authorization are outside the scope of this task.
+- This project is intended for local training and API testing purposes.
+
+## Current Status
+
+All Task 11 requirements have been implemented and tested successfully.
+
+No remaining implementation blockers were encountered.
