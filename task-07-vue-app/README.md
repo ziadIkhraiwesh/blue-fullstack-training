@@ -43,9 +43,7 @@ Preview the production build:
 npm run preview
 ```
 
-## Component Structure
-
-
+## Project Structure
 
 ```text
 task-07-vue-app/
@@ -62,8 +60,16 @@ task-07-vue-app/
 |   |-- task-09-favorite-count.png
 |   |-- task-09-favorites-view.png
 |   |-- task-09-invalid-form.png
-|   `-- task-09-successful-post.png
+|   |-- task-09-successful-post.png
+|   |-- task-10-tests-passing.png
+|   |-- task-10-production-preview.png
+|   `-- task-10-tested-flow.png
 |-- src/
+|   |-- __tests__/
+|   |   |-- setup.js
+|   |   |-- postsStore.spec.js
+|   |   |-- PostCard.spec.js
+|   |   `-- CreatePostView.spec.js
 |   |-- assets/
 |   |   |-- hero.png
 |   |   |-- vite.svg
@@ -94,13 +100,16 @@ task-07-vue-app/
 |   |-- App.vue
 |   |-- main.js
 |   `-- style.css
+|-- .env.example
 |-- .gitignore
+|-- frontend-qa-task-10.md
 |-- index.html
 |-- package-lock.json
 |-- package.json
 |-- README.md
 `-- vite.config.js
 ```
+
 
 
 ## Vue Components
@@ -474,11 +483,223 @@ The favorite action was initially placed inside the Post Details Not Found state
 No remaining blockers were encountered during Task 09.
 
 
-## Known Limitations
+## Frontend Handover - Task 10
 
-* The application uses hash-based routing to support direct refresh and client-side navigation when deployed to a static hosting service without additional server configuration.
-* JSONPlaceholder simulates successful POST requests but does not permanently save newly created posts on the server.
-* Favorite post IDs are stored in the browser's `localStorage`, so favorites are specific to the current browser and device and are not synchronized between different users or devices.
-* The displayed post content is provided by the JSONPlaceholder testing API and is used only for demonstrating API integration and Vue state management.
+Task 10 completes the current Vue.js frontend phase developed during Tasks 07-09. The application was finalized with automated testing, environment-based API configuration, production-build verification, regression QA, and handover documentation.
 
-No remaining implementation blockers were encountered.
+### Current Frontend Features
+
+The frontend currently includes:
+
+* Vue 3 application created with Vite.
+* Vue Router Single Page Application navigation.
+* Home, Projects, Posts, Contact, Favorites, Create Post, Post Details, and Not Found views.
+* Dynamic post routes using post IDs.
+* Posts search synchronized with the route query string.
+* Pinia shared state management.
+* Persistent favorite post IDs using localStorage.
+* Shared Favorites count across routes.
+* Validated Create Post form using `v-model`.
+* Loading, success, error, Retry, and empty states.
+* GET and POST integration with JSONPlaceholder.
+* Responsive layouts for desktop, tablet, and mobile.
+* Automated tests using Vitest and Vue Test Utils.
+
+### Main Architecture
+
+The main frontend areas are organized as follows:
+
+* `src/components/` contains reusable interface components such as the shared header, project cards, project filters, post cards, and page sections.
+* `src/views/` contains route-level pages coordinated by Vue Router.
+* `src/router/index.js` defines the application routes, dynamic post route, lazy-loaded views, and Not Found handling.
+* `src/stores/posts.js` is the Pinia source of truth for shared posts, favorites, loading, error, and post-submission state.
+* `src/services/postsApi.js` contains reusable API request logic and endpoint-specific paths.
+* `src/__tests__/` contains the automated Vitest test suite.
+* `frontend-qa-task-10.md` contains the final manual regression QA checklist and results.
+
+### Installation
+
+Clone or download the repository, then open the Vue application folder:
+
+```bash
+cd task-07-vue-app
+```
+
+Install the required dependencies:
+
+```bash
+npm install
+```
+
+On Windows PowerShell systems that block `npm.ps1`, use:
+
+```powershell
+npm.cmd install
+```
+
+### Environment Configuration
+
+Create a local `.env` file inside `task-07-vue-app` using the provided `.env.example` file.
+
+Required variable:
+
+```env
+VITE_API_BASE_URL=https://jsonplaceholder.typicode.com
+```
+
+The API service reads this variable using:
+
+```js
+import.meta.env.VITE_API_BASE_URL
+```
+
+The local `.env` file is ignored by Git, while `.env.example` is committed as safe configuration documentation.
+
+### Development Server
+
+Run the application in development mode:
+
+```bash
+npm run dev
+```
+
+Windows PowerShell alternative:
+
+```powershell
+npm.cmd run dev
+```
+
+Open the local URL displayed by Vite, usually:
+
+```text
+http://localhost:5173/
+```
+
+### Automated Testing
+
+The project uses:
+
+* Vitest.
+* Vue Test Utils.
+* jsdom.
+* Mocked API service functions.
+
+Run the complete automated test suite:
+
+```bash
+npm test
+```
+
+Windows PowerShell alternative:
+
+```powershell
+npm.cmd test
+```
+
+The automated tests cover:
+
+* Adding and removing favorite posts.
+* Restoring favorite IDs from localStorage.
+* Loading shared posts through a mocked service.
+* Rendering important PostCard content.
+* PostCard favorite interaction.
+* Blocking an empty Create Post submission.
+* Rendering field-level validation feedback.
+* Successful Create Post submission using a mocked API response.
+
+Final automated test result:
+
+```text
+Test Files: 3 passed
+Tests: 7 passed
+```
+
+### Production Build
+
+Create the optimized production build:
+
+```bash
+npm run build
+```
+
+Windows PowerShell alternative:
+
+```powershell
+npm.cmd run build
+```
+
+The generated files are placed in the `dist` folder. The generated `dist` folder is not committed to the repository.
+
+### Production Preview
+
+Run the generated production build locally:
+
+```bash
+npm run preview
+```
+
+Windows PowerShell alternative:
+
+```powershell
+npm.cmd run preview
+```
+
+Open the preview URL displayed by Vite, usually:
+
+```text
+http://localhost:4173/
+```
+
+Routes, assets, styles, API requests, Pinia state, localStorage persistence, and form behavior were verified using the production preview.
+
+### Regression QA
+
+A complete frontend regression test was performed for:
+
+* Route navigation and Not Found handling.
+* Direct route refresh.
+* Posts loading, search, query synchronization, error, Retry, and empty states.
+* Dynamic Post Details.
+* Favorites synchronization and localStorage persistence.
+* Create Post validation and submission states.
+* Keyboard navigation and visible focus styles.
+* Desktop, tablet, and mobile layouts.
+* Browser Console and Network output.
+* Production build and preview behavior.
+
+The complete checklist is available at:
+
+```text
+frontend-qa-task-10.md
+```
+
+Final regression result:
+
+```text
+All automated and manual frontend checks passed.
+Known remaining issues: None.
+```
+
+### Task 10 Screenshots
+
+#### Automated Tests Passing
+
+![Task 10 tests passing](screenshots/task-10-tests-passing.png)
+
+#### Production Preview
+
+![Task 10 production preview](screenshots/task-10-production-preview.png)
+
+#### Tested Frontend Flow
+
+![Task 10 tested flow](screenshots/task-10-tested-flow.png)
+
+### Known Limitations
+
+* JSONPlaceholder simulates successful POST requests but does not permanently store newly created posts.
+* Favorite post IDs are stored in the current browser's localStorage and are not synchronized between devices.
+* The application uses hash-based routing to support direct refresh when used with static hosting.
+* The displayed posts are testing data provided by JSONPlaceholder.
+
+No unresolved frontend blockers or known application issues remain.
+
