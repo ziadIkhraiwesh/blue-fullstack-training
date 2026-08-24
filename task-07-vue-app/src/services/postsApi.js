@@ -1,5 +1,12 @@
-const POSTS_API_URL = "https://jsonplaceholder.typicode.com/posts";
+const DEFAULT_API_BASE_URL =
+  "https://jsonplaceholder.typicode.com";
 
+const API_BASE_URL = (
+  import.meta.env.VITE_API_BASE_URL ||
+  DEFAULT_API_BASE_URL
+).replace(/\/$/, "");
+
+const POSTS_API_URL = `${API_BASE_URL}/posts`;
 const requestJson = async (url, options = {}) => {
   const response = await fetch(url, options);
 
