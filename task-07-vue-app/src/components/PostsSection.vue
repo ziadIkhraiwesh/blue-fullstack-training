@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onMounted } from "vue";
 import { storeToRefs } from "pinia";
+import PostCard from "./PostCard.vue";
 import {
   RouterLink,
   useRoute,
@@ -122,26 +123,9 @@ onMounted(() => {
         </div>
 
         <div v-else class="posts-grid">
-          <article v-for="post in filteredPosts" :key="post.id" class="post-card">
-            <span>Post {{ post.id }}</span>
-            <button class="favorite-button" type="button" :class="{ 'is-favorite': postsStore.isFavorite(post.id) }"
-              :aria-pressed="postsStore.isFavorite(post.id)" @click="postsStore.toggleFavorite(post.id)">
-              {{
-                postsStore.isFavorite(post.id)
-                  ? "★ Remove Favorite"
-                  : "☆ Add Favorite"
-              }}
-            </button>
-            <h3>{{ post.title }}</h3>
-            <p>{{ post.body }}</p>
-            <RouterLink class="read-more" :to="{
-              name: 'post-details',
-              params: { id: post.id },
-              query: searchQuery ? { from: searchQuery } : {}
-            }">
-              Read More
-            </RouterLink>
-          </article>
+          <PostCard v-for="post in filteredPosts" :key="post.id" :post="post"
+            :is-favorite="postsStore.isFavorite(post.id)" :from-search="searchQuery"
+            @toggle-favorite="postsStore.toggleFavorite" />
         </div>
       </div>
     </div>
