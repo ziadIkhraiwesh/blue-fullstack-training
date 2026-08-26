@@ -405,3 +405,208 @@ No database credentials or local secrets were committed to GitHub.
 All requirements for Tasks 11 and 12 have been implemented and tested successfully.
 
 No remaining implementation blockers were encountered.
+
+## Task 13: Relationships, API Resources, Filtering and Pagination
+
+Task 13 extends the database-backed Posts API by adding categories, Eloquent relationships, standardized API resources, filtering, sorting, and pagination.
+
+### Category Entity
+
+The `categories` table contains:
+
+| Field | Description |
+|---|---|
+| `id` | Primary key |
+| `name` | Unique category name |
+| `slug` | Unique URL-friendly category identifier |
+| `created_at` | Creation timestamp |
+| `updated_at` | Update timestamp |
+
+Sample categories include:
+
+- Technology
+- Business
+- Education
+
+### Post and Category Relationship
+
+Each post belongs to one category, and each category can contain multiple posts.
+
+```text
+Category has many Posts
+Post belongs to Category
+```
+
+The `posts` table contains a `category_id` foreign key that references the `categories` table.
+
+Eloquent relationships are defined using:
+
+```php
+Category::posts()
+Post::category()
+```
+
+Posts are retrieved with their category using eager loading to avoid repeated database queries.
+
+### Categories Endpoint
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/categories` | Retrieve all categories and their post counts |
+
+Example:
+
+```http
+GET http://127.0.0.1:8000/api/categories
+```
+
+### Updated Posts Request Fields
+
+Creating or updating a post requires:
+
+```json
+{
+  "title": "Laravel Relationships",
+  "body": "This post demonstrates Laravel Eloquent relationships.",
+  "status": "published",
+  "category_id": 1
+}
+```
+
+Validation rules:
+
+- `title`: required string, maximum 255 characters.
+- `body`: required string.
+- `status`: required and must be `draft` or `published`.
+- `category_id`: required integer and must exist in the `categories` table.
+
+An invalid category returns a `422 Unprocessable Content` response.
+
+### Post API Resources
+
+Laravel API Resources control the returned JSON structure.
+
+Each post response includes:
+
+- ID
+- Title
+- Body
+- Status
+- Category information
+- Creation timestamp
+- Update timestamp
+
+Category responses include:
+
+- ID
+- Name
+- Slug
+- Post count
+- Timestamps
+
+### Posts Query Parameters
+
+The posts endpoint supports the following query parameters:
+
+| Parameter | Accepted Values | Description |
+|---|---|---|
+| `search` | Text | Search posts by title |
+| `status` | `draft`, `published` | Filter by post status |
+| `category_id` | Existing category ID | Filter by category |
+| `sort_by` | `created_at`, `title` | Select the sorting field |
+| `sort_direction` | `asc`, `desc` | Select sorting direction |
+| `per_page` | `1` to `50` | Select page size |
+| `page` | Positive page number | Select a pagination page |
+
+### Filtering Examples
+
+Search by title:
+
+```http
+GET /api/posts?search=laravel
+```
+
+Filter by status:
+
+```http
+GET /api/posts?status=published
+```
+
+Filter by category:
+
+```http
+GET /api/posts?category_id=1
+```
+
+Combine filters and sorting:
+
+```http
+GET /api/posts?status=published&category_id=1&sort_by=title&sort_direction=asc
+```
+
+### Pagination
+
+The posts endpoint uses Laravel pagination and returns pagination links and metadata.
+
+The default page size is five posts. A controlled `per_page` value can be provided, with a maximum of 50.
+
+Examples:
+
+```http
+GET /api/posts?page=1
+GET /api/posts?per_page=3&page=2
+```
+
+### Database Setup and Seeding
+
+Run the migrations:
+
+```bash
+php artisan migrate
+```
+
+Seed categories and related posts:
+
+```bash
+php artisan db:seed
+```
+
+Rebuild and seed the complete database when necessary:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+### Task 13 Testing
+
+The following scenarios were tested using Postman and HeidiSQL:
+
+- Retrieving categories.
+- Retrieving posts with category information.
+- Creating a post with a valid category.
+- Rejecting a nonexistent category.
+- Updating a post and its category.
+- Searching posts by title.
+- Filtering by status.
+- Filtering by category.
+- Combining multiple filters.
+- Sorting by title and creation date.
+- Paginating the posts list and opening the second page.
+- Confirming category relationships in MySQL.
+- Retesting the existing CRUD operations from Task 12.
+
+### Task 13 Screenshot Evidence
+
+Testing screenshots are available in:
+
+```text
+screenshots/task-13/
+```
+
+The evidence includes category responses, related posts, validation, filtering, sorting, pagination, and database relationships.
+
+### Task 13 Status
+
+Task 13 is complete. Categories, Eloquent relationships, API Resources, filtering, controlled sorting, pagination, validation, eager loading, testing evidence, and documentation were implemented successfully.
+
+No remaining implementation blockers were encountered.
