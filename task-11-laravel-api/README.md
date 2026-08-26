@@ -1,42 +1,48 @@
-# Task 11 – Laravel REST API
+# Laravel REST API Training Project
 
 ## Project Overview
 
-This project is a REST API developed with PHP and Laravel as part of Task 11 of the Blue Full-Stack Development Training Program.
+This Laravel backend project was developed as part of Tasks 11 and 12 of the Blue Full-Stack Development Training Program.
 
-The objective of this task is to understand Laravel project structure, API routing, controllers, JSON responses, HTTP status codes, request validation, and API testing using Postman.
+Task 11 introduced Laravel project structure, controllers, API routes, JSON responses, HTTP status codes, and request validation.
 
-The API provides health information, trainee profile information, technical skills, training tasks, individual task details, and a validated contact endpoint.
+Task 12 extended the same application into a database-driven CRUD REST API using MySQL, Laravel migrations, Eloquent ORM, seeders, validation, and Postman testing.
 
 ## Technologies and Tools
 
 - PHP 8.3.30
 - Laravel 13.26.1
 - Composer 2.9.4
-- SQLite
+- MySQL 8.4.3
+- Eloquent ORM
 - Postman
+- HeidiSQL
+- Laragon
 - Visual Studio Code
-- Git
-- GitHub
+- Git and GitHub
 
 ## Project Structure
 
 ```text
 task-11-laravel-api/
 |-- app/
-|   `-- Http/
-|       `-- Controllers/
-|           |-- ContactController.php
-|           |-- Controller.php
-|           |-- HealthController.php
-|           `-- TrainingController.php
+|   |-- Http/
+|   |   `-- Controllers/
+|   |       |-- ContactController.php
+|   |       |-- HealthController.php
+|   |       |-- PostController.php
+|   |       `-- TrainingController.php
+|   `-- Models/
+|       |-- Post.php
+|       `-- User.php
 |-- bootstrap/
-|   |-- app.php
-|   `-- cache/
+|   `-- app.php
 |-- config/
 |-- database/
-|   |-- database.sqlite
-|   `-- migrations/
+|   |-- migrations/
+|   `-- seeders/
+|       |-- DatabaseSeeder.php
+|       `-- PostSeeder.php
 |-- public/
 |-- resources/
 |-- routes/
@@ -49,17 +55,6 @@ task-11-laravel-api/
 |-- composer.json
 `-- README.md
 ```
-
-### Important Directories
-
-- `app/Http/Controllers`: Contains the controllers responsible for processing API requests and returning JSON responses.
-- `routes/api.php`: Contains all API endpoint definitions.
-- `bootstrap/app.php`: Registers the API routes and configures the Laravel application.
-- `config`: Contains Laravel application configuration files.
-- `database`: Contains database migrations and the local SQLite database file.
-- `public`: Contains the application entry point.
-- `storage`: Contains logs, cache files, and generated framework files.
-- `tests`: Contains automated application tests.
 
 ## Installation and Setup
 
@@ -75,41 +70,72 @@ git clone https://github.com/ziadIkhraiwesh/blue-fullstack-training.git
 cd blue-fullstack-training/task-11-laravel-api
 ```
 
-### 3. Install PHP dependencies
+### 3. Install the PHP dependencies
 
 ```bash
 composer install
 ```
 
-### 4. Create the environment file
+### 4. Create the local environment file
 
-In Windows PowerShell:
+Using Windows PowerShell:
 
 ```powershell
 Copy-Item .env.example .env
 ```
 
-### 5. Generate the application key
+### 5. Generate the Laravel application key
 
 ```bash
 php artisan key:generate
 ```
 
-### 6. Create the SQLite database
+## MySQL Database Setup
 
-In Windows PowerShell:
+Start MySQL using Laragon and create a local database named:
 
-```powershell
-New-Item database/database.sqlite -ItemType File -Force
+```text
+blue_training_api
 ```
 
-### 7. Run database migrations
+Update the local `.env` file with the correct database information:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=blue_training_api
+DB_USERNAME=root
+DB_PASSWORD=your_local_mysql_password
+```
+
+Do not commit the `.env` file, passwords, credentials, or other local secrets to GitHub.
+
+### Run the migrations
 
 ```bash
 php artisan migrate
 ```
 
-### 8. Start the Laravel development server
+### Seed the sample posts
+
+```bash
+php artisan db:seed
+```
+
+The migration creates the `posts` table, and the seeder adds several sample posts for development and testing.
+
+### Reset and reseed the local database when needed
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+Warning: this command deletes the existing local database tables and recreates them.
+
+## Running the Application
+
+Start the Laravel development server:
 
 ```bash
 php artisan serve
@@ -127,53 +153,158 @@ The API base URL is:
 http://127.0.0.1:8000/api
 ```
 
-## API Endpoints
+## Task 11 API Endpoints
 
-| Method | Endpoint | Description | Successful Status |
+| Method | Endpoint | Description | Success Status |
 |---|---|---|---|
 | `GET` | `/api/health` | Returns the API health status | `200 OK` |
 | `GET` | `/api/profile` | Returns trainee profile information | `200 OK` |
-| `GET` | `/api/skills` | Returns a list of technical skills | `200 OK` |
+| `GET` | `/api/skills` | Returns the technical skills | `200 OK` |
 | `GET` | `/api/training/tasks` | Returns all training tasks | `200 OK` |
-| `GET` | `/api/training/tasks/{id}` | Returns one training task by ID | `200 OK` |
+| `GET` | `/api/training/tasks/{id}` | Returns one training task | `200 OK` |
 | `POST` | `/api/contact` | Validates and processes contact data | `201 Created` |
 
-If a requested training task does not exist, the API returns:
+## Task 12 Posts CRUD Endpoints
+
+| Method | Endpoint | Description | Success Status |
+|---|---|---|---|
+| `GET` | `/api/posts` | Returns all posts | `200 OK` |
+| `GET` | `/api/posts/{id}` | Returns one post by ID | `200 OK` |
+| `POST` | `/api/posts` | Creates a new post | `201 Created` |
+| `PUT` | `/api/posts/{id}` | Updates an existing post | `200 OK` |
+| `PATCH` | `/api/posts/{id}` | Updates an existing post | `200 OK` |
+| `DELETE` | `/api/posts/{id}` | Deletes an existing post | `200 OK` |
+
+A missing post returns:
 
 ```text
 404 Not Found
 ```
 
-If contact-form validation fails, the API returns:
+Invalid POST or PUT data returns:
 
 ```text
 422 Unprocessable Content
 ```
 
-## Example Successful Response
+## Posts Table
+
+The `posts` migration creates the following fields:
+
+| Field | Database Type | Description |
+|---|---|---|
+| `id` | BIGINT | Auto-incrementing primary key |
+| `title` | VARCHAR(255) | Post title |
+| `body` | TEXT | Post content |
+| `status` | ENUM | Accepts `draft` or `published` |
+| `created_at` | TIMESTAMP | Record creation time |
+| `updated_at` | TIMESTAMP | Last update time |
+
+## Request Fields
+
+The following fields are required when creating or updating a post:
+
+| Field | Validation Rules |
+|---|---|
+| `title` | Required, string, maximum 255 characters |
+| `body` | Required, string |
+| `status` | Required, must be `draft` or `published` |
+
+## Create Post Example
 
 Request:
 
 ```http
-GET /api/health
+POST /api/posts
 ```
 
-Response:
+Headers:
+
+```text
+Accept: application/json
+Content-Type: application/json
+```
+
+Request body:
+
+```json
+{
+  "title": "Laravel API Development",
+  "body": "This post was created through the database-backed Laravel REST API.",
+  "status": "published"
+}
+```
+
+Successful response:
 
 ```json
 {
   "status": "success",
-  "application_name": "Laravel",
-  "message": "Laravel API is running successfully."
+  "message": "Post created successfully.",
+  "data": {
+    "id": 6,
+    "title": "Laravel API Development",
+    "body": "This post was created through the database-backed Laravel REST API.",
+    "status": "published"
+  }
 }
 ```
 
-## Example Task Not Found Response
+## Update Post Example
 
 Request:
 
 ```http
-GET /api/training/tasks/999
+PUT /api/posts/6
+```
+
+Request body:
+
+```json
+{
+  "title": "Updated Laravel API Development",
+  "body": "This post was updated successfully through the Laravel CRUD REST API.",
+  "status": "draft"
+}
+```
+
+## Validation Error Example
+
+Invalid request body:
+
+```json
+{
+  "title": "",
+  "body": "",
+  "status": "archived"
+}
+```
+
+Example response:
+
+```json
+{
+  "message": "The title field is required. (and 2 more errors)",
+  "errors": {
+    "title": [
+      "The title field is required."
+    ],
+    "body": [
+      "The body field is required."
+    ],
+    "status": [
+      "The selected status is invalid."
+    ]
+  }
+}
+```
+
+## Not Found Response Example
+
+Request:
+
+```http
+GET /api/posts/999
 ```
 
 Response:
@@ -181,147 +312,96 @@ Response:
 ```json
 {
   "status": "error",
-  "message": "Training task not found."
+  "message": "Post not found."
 }
 ```
 
-## Contact Endpoint
+The same JSON `404` behavior is used when viewing, updating, or deleting a post that does not exist.
 
-Request:
+## Seeder
 
-```http
-POST /api/contact
+`PostSeeder` creates several sample records with both supported status values:
+
+- `draft`
+- `published`
+
+Run the seeder using:
+
+```bash
+php artisan db:seed
 ```
 
-Required headers:
-
-```text
-Accept: application/json
-Content-Type: application/json
-```
-
-Example valid request body:
-
-```json
-{
-  "name": "Ziad Ikhraiwesh",
-  "email": "ziad@example.com",
-  "subject": "Laravel Training Request",
-  "message": "I am testing the Laravel contact API validation endpoint."
-}
-```
-
-Example successful response:
-
-```json
-{
-  "status": "success",
-  "message": "Contact request received successfully.",
-  "data": {
-    "name": "Ziad Ikhraiwesh",
-    "email": "ziad@example.com",
-    "subject": "Laravel Training Request",
-    "message": "I am testing the Laravel contact API validation endpoint."
-  }
-}
-```
-
-## Contact Validation Rules
-
-| Field | Rules |
-|---|---|
-| `name` | Required, string, maximum 100 characters |
-| `email` | Required, valid email address, maximum 255 characters |
-| `subject` | Optional, string, maximum 150 characters |
-| `message` | Required, string, minimum 10 and maximum 1000 characters |
-
-Example invalid request:
-
-```json
-{
-  "name": "",
-  "email": "not-an-email",
-  "subject": "Validation Test",
-  "message": "short"
-}
-```
-
-Laravel returns a `422 Unprocessable Content` response containing field-level validation errors.
+The seeder uses Eloquent `updateOrCreate()` to avoid duplicating the same sample posts when it is executed more than once.
 
 ## API Testing
 
-All implemented endpoints were tested using Postman.
+All required API operations were tested using Postman.
 
-The following scenarios were verified:
+The testing covered:
 
-- Successful health response.
-- Successful trainee profile response.
-- Successful skills response.
-- Successful training tasks response.
-- Successful individual task response.
-- Missing task response with status code `404`.
-- Successful contact submission with status code `201`.
-- Invalid contact submission with status code `422`.
+- Listing all posts.
+- Viewing one post.
+- Creating a valid post.
+- Attempting to create an invalid post.
+- Updating an existing post.
+- Deleting an existing post.
+- Viewing a missing post.
+- Updating a missing post.
+- Deleting a missing post.
+- Verifying the database records using HeidiSQL.
 
-## Screenshots
+## Task 12 Screenshots
 
-### Laravel Application Running
+The Task 12 submission includes evidence of:
 
-![Laravel application running](screenshots/task-11-laravel-running.png)
-
-### Health Endpoint
-
-![Health endpoint response](screenshots/task-11-health-response.png)
-
-### Training Tasks Endpoint
-
-![Training tasks response](screenshots/task-11-tasks-response.png)
-
-### Task Not Found Response
-
-![Task not found response](screenshots/task-11-task-not-found.png)
-
-### Successful Contact Request
-
-![Successful contact request](screenshots/task-11-contact-success.png)
-
-### Contact Validation Errors
-
-![Contact validation errors](screenshots/task-11-contact-validation-error.png)
+- Successful migrations.
+- Sample records stored in MySQL.
+- Listing posts.
+- Viewing one post.
+- Creating a post.
+- Updating a post.
+- Deleting a post.
+- Validation errors.
+- A JSON `404` response.
 
 ## What I Learned
 
-During this task, I learned how to:
+During Tasks 11 and 12, I learned how to:
 
-- Set up and run a Laravel project.
-- Understand the main Laravel project directories.
-- Register API routes inside `routes/api.php`.
-- Connect API routes to controller methods.
-- Return structured JSON responses.
-- Use appropriate HTTP status codes.
-- Retrieve a single resource using a route parameter.
-- Return a custom `404` response when a resource is not found.
-- Validate JSON request data using Laravel validation.
-- Test successful and unsuccessful API requests using Postman.
-- Manage Laravel dependencies using Composer.
+- Configure a Laravel application.
+- Register API routes.
+- Organize API logic inside controllers.
+- Connect Laravel to a MySQL database.
+- Create and execute database migrations.
+- Define an Eloquent model and mass-assignable fields.
+- Use Eloquent instead of raw SQL.
+- Create and run database seeders.
+- Implement database-backed CRUD operations.
+- Validate JSON requests on the server.
+- Return readable JSON responses and suitable HTTP status codes.
+- Handle missing database records using JSON `404` responses.
+- Test API operations using Postman.
+- Verify persistent records using HeidiSQL.
 
 ## Challenges and Solutions
 
-During the initial setup, Laravel could not write to the `bootstrap/cache` directory because the project was located inside a OneDrive folder. I corrected the directory permissions and verified that Laravel could write to the folder.
+During the initial Laravel setup, the `bootstrap/cache` directory was not writable because the project was located inside a OneDrive folder. The directory permissions were corrected and Laravel was able to run successfully.
 
-I also encountered an error because the SQLite database file did not exist. I created `database/database.sqlite` and ran the Laravel migrations successfully.
+The project initially used SQLite. For Task 12, a new MySQL database was created using HeidiSQL, and the Laravel `.env` configuration was updated to use the MySQL connection.
 
-After resolving these setup issues, the Laravel application and all required API endpoints worked correctly.
+A MySQL authentication error occurred when attempting to connect without a password. It was resolved by using the existing local MySQL root password.
+
+No database credentials or local secrets were committed to GitHub.
 
 ## Known Limitations
 
-- The training tasks, profile, and skills currently use sample data defined inside the application instead of persistent database records.
-- The contact endpoint validates and returns the submitted data but does not permanently save it or send an email.
-- Authentication and authorization are outside the scope of this task.
-- This project is intended for local training and API testing purposes.
+- The API does not currently include authentication or authorization.
+- The contact endpoint validates data but does not permanently store it.
+- The project currently uses a local MySQL database.
+- API pagination, filtering, and sorting are outside the scope of Task 12.
 
 ## Current Status
 
-All Task 11 requirements have been implemented and tested successfully.
+All requirements for Tasks 11 and 12 have been implemented and tested successfully.
 
 No remaining implementation blockers were encountered.
