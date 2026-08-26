@@ -3,6 +3,7 @@
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\TrainingController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', [
@@ -34,3 +35,5 @@ Route::post('/contact', [
     ContactController::class,
     'store',
 ]);
+
+Route::apiResource('posts', PostController::class);
