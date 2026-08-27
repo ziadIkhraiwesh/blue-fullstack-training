@@ -610,3 +610,286 @@ The evidence includes category responses, related posts, validation, filtering, 
 Task 13 is complete. Categories, Eloquent relationships, API Resources, filtering, controlled sorting, pagination, validation, eager loading, testing evidence, and documentation were implemented successfully.
 
 No remaining implementation blockers were encountered.
+
+## Task 14: Laravel Authentication, Authorization and Protected APIs
+
+Task 14 extends the existing Laravel Posts API by adding token-based authentication with Laravel Sanctum, post ownership, protected write operations, and authorization policies.
+
+### Laravel Sanctum Setup
+
+Laravel Sanctum is used to authenticate API requests using personal access tokens.
+
+Install and configure API authentication:
+
+```bash
+php artisan install:api
+php artisan migrate
+```
+
+The `User` model uses the `HasApiTokens` trait to create and manage access tokens.
+
+### Authentication Endpoints
+
+| Method | Endpoint | Authentication | Description |
+|---|---|---|---|
+| POST | `/api/register` | Public | Register a new user and return an access token |
+| POST | `/api/login` | Public | Authenticate a user and return an access token |
+| GET | `/api/me` | Required | Return the authenticated user's information |
+| POST | `/api/logout` | Required | Revoke the current access token |
+
+### Register
+
+```http
+POST /api/register
+```
+
+Example request:
+
+```json
+{
+  "name": "Example User",
+  "email": "example@example.com",
+  "password": "your-secure-password",
+  "password_confirmation": "your-secure-password"
+}
+```
+
+Registration validates the submitted data, hashes the password securely, creates the user, and returns an access token.
+
+### Login
+
+```http
+POST /api/login
+```
+
+Example request:
+
+```json
+{
+  "email": "example@example.com",
+  "password": "your-secure-password"
+}
+```
+
+A successful login returns the authenticated user's basic information and a Sanctum access token. Invalid credentials are rejected with a validation response.
+
+### Bearer Token Authentication
+
+Protected API requests must include the access token in the `Authorization` header:
+
+```http
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Accept: application/json
+```
+
+In Postman, select:
+
+```text
+Authorization → Bearer Token
+```
+
+Then paste the access token into the token field.
+
+Real passwords, personal credentials, and access tokens must never be committed to the repository.
+
+### Authenticated User
+
+```http
+GET /api/me
+```
+
+This endpoint returns basic information about the currently authenticated user. Password hashes, remember tokens, and access tokens are not included in the response.
+
+### Logout
+
+```http
+POST /api/logout
+```
+
+Logout deletes the current access token. After logout, the revoked token can no longer access `/api/me` or any other protected endpoint.
+
+### Protected Posts Endpoints
+
+Public read operations remain available without authentication:
+
+| Method | Endpoint | Authentication |
+|---|---|---|
+| GET | `/api/posts` | Public |
+| GET | `/api/posts/{id}` | Public |
+| GET | `/api/categories` | Public |
+
+Post write operations require a valid Sanctum token:
+
+| Method | Endpoint | Authentication |
+|---|---|---|
+| POST | `/api/posts` | Required |
+| PUT | `/api/posts/{id}` | Required |
+| PATCH | `/api/posts/{id}` | Required |
+| DELETE | `/api/posts/{id}` | Required |
+
+### Post Ownership
+
+A `user_id` foreign key connects each post to its owner.
+
+The Eloquent relationships are:
+
+```text
+User has many Posts
+Post belongs to User
+```
+
+When an authenticated user creates a post, the API automatically assigns the post to that user.
+
+The client must not submit a `user_id`. Ownership is determined from the authenticated Sanctum token.
+
+Example authenticated post request:
+
+```json
+{
+  "title": "Protected Laravel Post",
+  "body": "This post is assigned automatically to the authenticated user.",
+  "status": "published",
+  "category_id": 1
+}
+```
+
+### Post Author Resource
+
+Post API responses contain safe author information:
+
+```json
+{
+  "author": {
+    "id": 1,
+    "name": "Example User"
+  }
+}
+```
+
+Sensitive user data such as password hashes, remember tokens, and access tokens is never returned inside post resources.
+
+### Authorization Policy
+
+`PostPolicy` controls update and delete permissions.
+
+Authorization rules:
+
+- An authenticated user may update their own posts.
+- An authenticated user may delete their own posts.
+- A user cannot update another user's posts.
+- A user cannot delete another user's posts.
+- Unauthorized ownership attempts return `403 Forbidden`.
+
+### Unauthenticated Response
+
+A protected request without a valid Bearer token returns:
+
+```http
+401 Unauthorized
+```
+
+```json
+{
+  "message": "Unauthenticated."
+}
+```
+
+### Forbidden Response
+
+When an authenticated user attempts to update or delete another user's post, the API returns:
+
+```http
+403 Forbidden
+```
+
+```json
+{
+  "message": "This action is unauthorized."
+}
+```
+
+### Authentication and Authorization
+
+Authentication determines who the user is.
+
+Authorization determines what the authenticated user is allowed to do.
+
+Laravel Sanctum handles token-based authentication, while `PostPolicy` handles ownership authorization.
+
+### Database Setup and Seeding
+
+Run all pending migrations:
+
+```bash
+php artisan migrate
+```
+
+Seed the database with categories, posts, and test users:
+
+```bash
+php artisan db:seed
+```
+
+Rebuild and seed the database when necessary:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+The included users are test accounts for local authentication and authorization testing only. No real user credentials are included.
+
+### Run the Application
+
+```bash
+php artisan serve
+```
+
+The local API is available at:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+### Task 14 Testing
+
+The following scenarios were tested using Postman:
+
+- Registering a new user.
+- Logging in and receiving a Sanctum access token.
+- Rejecting invalid login credentials.
+- Retrieving the authenticated user through `/api/me`.
+- Creating a post through an authenticated request.
+- Automatically assigning the new post to the authenticated user.
+- Updating a post successfully as its owner.
+- Deleting a post successfully as its owner.
+- Rejecting protected requests without an access token.
+- Rejecting update attempts from a user who does not own the post.
+- Logging out and invalidating the current access token.
+- Confirming that an invalidated token can no longer access protected endpoints.
+- Confirming that passwords and sensitive token data are not exposed.
+- Retesting CRUD operations.
+- Retesting categories and relationships.
+- Retesting search, filtering, sorting, and pagination.
+
+### Task 14 Screenshot Evidence
+
+Authentication and authorization testing screenshots are available in:
+
+```text
+screenshots/task-14/
+```
+
+The evidence includes:
+
+- Successful login and token response.
+- Authenticated `/api/me` response.
+- Authenticated post creation.
+- Unauthenticated protected request.
+- Forbidden ownership attempt by another user.
+- Logout and token invalidation.
+
+### Task 14 Status
+
+Task 14 is complete. Laravel Sanctum authentication, access tokens, protected API routes, user-to-post ownership, automatic owner assignment, authorization policies, safe author resources, JSON authentication errors, testing evidence, and documentation were implemented successfully.
+
+No remaining implementation blockers were encountered.
