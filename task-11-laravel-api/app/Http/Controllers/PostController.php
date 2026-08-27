@@ -7,7 +7,7 @@ use App\Models\Post;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-
+use Illuminate\Support\Facades\Gate;
 class PostController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
@@ -26,7 +26,7 @@ class PostController extends Controller
         $perPage = $validated['per_page'] ?? 5;
 
         $posts = Post::query()
-            ->with('category')
+            ->with('category', 'user')
             ->when(
                 $validated['search'] ?? null,
                 fn($query, $search) =>
@@ -58,8 +58,8 @@ class PostController extends Controller
             'category_id' => ['required', 'integer', 'exists:categories,id'],
         ]);
 
-        $post = Post::create($validatedData);
-        $post->load('category');
+        $post = $request->user()->posts()->create($validatedData);
+        $post->load(['category', 'user']);
 
         return (new PostResource($post))
             ->response()
@@ -68,7 +68,7 @@ class PostController extends Controller
 
     public function show(int $id): PostResource|JsonResponse
     {
-        $post = Post::with('category')->find($id);
+        $post = Post::with(['category', 'user'])->find($id);
 
         if (!$post) {
             return response()->json([
@@ -91,6 +91,8 @@ class PostController extends Controller
             ], 404);
         }
 
+        Gate::authorize('update', $post);
+
         $validatedData = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'body' => ['required', 'string'],
@@ -99,7 +101,7 @@ class PostController extends Controller
         ]);
 
         $post->update($validatedData);
-        $post->load('category');
+        $post->load(['category', 'user']);
 
         return new PostResource($post);
     }
@@ -114,6 +116,8 @@ class PostController extends Controller
                 'message' => 'Post not found.',
             ], 404);
         }
+
+        Gate::authorize('delete', $post);
 
         $post->delete();
 

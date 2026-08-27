@@ -19,6 +19,13 @@ class PostResource extends JsonResource
                 $this->whenLoaded('category')
             ),
 
+            'author' => $this->whenLoaded('user', function () {
+                return [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                ];
+            }),
+
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];
