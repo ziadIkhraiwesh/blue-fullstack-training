@@ -1,6 +1,7 @@
 <script setup>
 import {
   computed,
+  onMounted,
   reactive
 } from "vue";
 import { storeToRefs } from "pinia";
@@ -9,86 +10,29 @@ import { usePostsStore } from "../stores/posts";
 const postsStore = usePostsStore();
 
 const {
+  categories,
+  isCategoriesLoading,
+  categoriesError,
   isSubmitting,
   submitError,
+  validationErrors,
   createdPost
 } = storeToRefs(postsStore);
 
 const form = reactive({
   title: "",
   body: "",
-  userId: ""
+  status: "draft",
+  category_id: ""
 });
 
-const errors = reactive({
-  title: "",
-  body: "",
-  userId: ""
-});
-
-const bodyCharacterCount = computed(() => form.body.length);
-
-const validateField = (fieldName) => {
-  const value = String(form[fieldName]).trim();
-
-  errors[fieldName] = "";
-
-  if (fieldName === "title") {
-    if (!value) {
-      errors.title = "Title is required.";
-    } else if (value.length < 5) {
-      errors.title =
-        "Title must contain at least 5 characters.";
-    } else if (value.length > 100) {
-      errors.title =
-        "Title must not exceed 100 characters.";
-    }
-  }
-
-  if (fieldName === "body") {
-    if (!value) {
-      errors.body = "Post content is required.";
-    } else if (value.length < 20) {
-      errors.body =
-        "Post content must contain at least 20 characters.";
-    } else if (value.length > 500) {
-      errors.body =
-        "Post content must not exceed 500 characters.";
-    }
-  }
-
-  if (fieldName === "userId") {
-    const numericUserId = Number(value);
-
-    if (!value) {
-      errors.userId = "User ID is required.";
-    } else if (
-      !Number.isInteger(numericUserId) ||
-      numericUserId <= 0
-    ) {
-      errors.userId =
-        "User ID must be a positive whole number.";
-    }
-  }
-
-  return errors[fieldName] === "";
-};
-
-const validateForm = () => {
-  const titleIsValid = validateField("title");
-  const bodyIsValid = validateField("body");
-  const userIdIsValid = validateField("userId");
-
-  return (
-    titleIsValid &&
-    bodyIsValid &&
-    userIdIsValid
-  );
-};
+const bodyCharacterCount = computed(
+  () => form.body.length
+);
 
 const handleInput = (fieldName) => {
-  if (errors[fieldName]) {
-    validateField(fieldName);
+  if (validationErrors.value[fieldName]) {
+    delete postsStore.validationErrors[fieldName];
   }
 
   if (submitError.value) {
@@ -97,39 +41,47 @@ const handleInput = (fieldName) => {
 };
 
 const handleSubmit = async () => {
-  if (!validateForm() || isSubmitting.value) {
+  if (isSubmitting.value) {
     return;
   }
 
   await postsStore.submitPost({
     title: form.title.trim(),
     body: form.body.trim(),
-    userId: Number(form.userId)
+    status: form.status,
+    category_id: form.category_id
+      ? Number(form.category_id)
+      : null
   });
 };
 
 const startNewPost = () => {
   form.title = "";
   form.body = "";
-  form.userId = "";
-
-  errors.title = "";
-  errors.body = "";
-  errors.userId = "";
+  form.status = "draft";
+  form.category_id = "";
 
   postsStore.resetSubmission();
 };
+
+onMounted(() => {
+  postsStore.loadCategories();
+});
 </script>
 
 <template>
   <section class="section create-post-section">
     <div class="container">
-      <p class="eyebrow-text">Vue Form Handling</p>
+      <p class="eyebrow-text">
+        Vue + Laravel End-to-End CRUD
+      </p>
+
       <h1>Create a New Post</h1>
 
       <p class="section-description">
-        Complete the form to send a simulated post creation
-        request to the JSONPlaceholder API.
+        Submit this form to the protected Laravel endpoint.
+        The authenticated user becomes the post owner
+        automatically, and the record is persisted in MySQL.
       </p>
 
       <div
@@ -141,13 +93,23 @@ const startNewPost = () => {
         <h2>Post created successfully</h2>
 
         <p>
-          JSONPlaceholder returned the record ID:
-          <strong>{{ createdPost.id }}</strong>
+          Laravel created post
+          <strong>#{{ createdPost.id }}</strong>
+          and saved it in the database.
         </p>
 
         <p>
-          This is a simulated API response and the post will
-          not be permanently stored on the server.
+          Owner:
+          <strong>
+            {{ createdPost.author?.name }}
+          </strong>
+        </p>
+
+        <p>
+          Category:
+          <strong>
+            {{ createdPost.category?.name }}
+          </strong>
         </p>
 
         <button
@@ -172,9 +134,24 @@ const startNewPost = () => {
         >
           <p>{{ submitError }}</p>
           <p>
-            Your entered values were preserved. Please try
-            submitting again.
+            Review the fields below and try again.
           </p>
+        </div>
+
+        <div
+          v-if="categoriesError"
+          class="submit-error"
+          role="alert"
+        >
+          <p>{{ categoriesError }}</p>
+
+          <button
+            class="button button-secondary"
+            type="button"
+            @click="postsStore.loadCategories"
+          >
+            Retry Categories
+          </button>
         </div>
 
         <div class="form-group">
@@ -186,22 +163,18 @@ const startNewPost = () => {
             id="post-title"
             v-model="form.title"
             type="text"
-            maxlength="100"
             autocomplete="off"
-            :aria-invalid="Boolean(errors.title)"
-            :aria-describedby="
-              errors.title ? 'post-title-error' : undefined
+            :aria-invalid="
+              Boolean(validationErrors.title)
             "
-            @blur="validateField('title')"
             @input="handleInput('title')"
           >
 
           <p
-            v-if="errors.title"
-            id="post-title-error"
+            v-if="validationErrors.title"
             class="field-error"
           >
-            {{ errors.title }}
+            {{ validationErrors.title[0] }}
           </p>
         </div>
 
@@ -214,75 +187,107 @@ const startNewPost = () => {
             id="post-body"
             v-model="form.body"
             rows="8"
-            maxlength="500"
-            :aria-invalid="Boolean(errors.body)"
-            :aria-describedby="
-              errors.body
-                ? 'post-body-error post-body-count'
-                : 'post-body-count'
+            maxlength="1000"
+            :aria-invalid="
+              Boolean(validationErrors.body)
             "
-            @blur="validateField('body')"
             @input="handleInput('body')"
           ></textarea>
 
           <div class="field-feedback">
             <p
-              v-if="errors.body"
-              id="post-body-error"
+              v-if="validationErrors.body"
               class="field-error"
             >
-              {{ errors.body }}
+              {{ validationErrors.body[0] }}
             </p>
 
-            <p
-              id="post-body-count"
-              class="character-count"
-            >
-              {{ bodyCharacterCount }} / 500 characters
+            <p class="character-count">
+              {{ bodyCharacterCount }} / 1000 characters
             </p>
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="post-user-id">
-            User ID
-          </label>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="post-status">
+              Status
+            </label>
 
-          <input
-            id="post-user-id"
-            v-model="form.userId"
-            type="number"
-            min="1"
-            step="1"
-            inputmode="numeric"
-            :aria-invalid="Boolean(errors.userId)"
-            :aria-describedby="
-              errors.userId ? 'post-user-id-error' : undefined
-            "
-            @blur="validateField('userId')"
-            @input="handleInput('userId')"
-          >
+            <select
+              id="post-status"
+              v-model="form.status"
+              :aria-invalid="
+                Boolean(validationErrors.status)
+              "
+              @change="handleInput('status')"
+            >
+              <option value="draft">Draft</option>
+              <option value="published">
+                Published
+              </option>
+            </select>
 
-          <p
-            v-if="errors.userId"
-            id="post-user-id-error"
-            class="field-error"
-          >
-            {{ errors.userId }}
-          </p>
+            <p
+              v-if="validationErrors.status"
+              class="field-error"
+            >
+              {{ validationErrors.status[0] }}
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="post-category">
+              Category
+            </label>
+
+            <select
+              id="post-category"
+              v-model="form.category_id"
+              :disabled="isCategoriesLoading"
+              :aria-invalid="
+                Boolean(validationErrors.category_id)
+              "
+              @change="handleInput('category_id')"
+            >
+              <option value="">
+                {{
+                  isCategoriesLoading
+                    ? "Loading categories..."
+                    : "Select a category"
+                }}
+              </option>
+
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="String(category.id)"
+              >
+                {{ category.name }}
+              </option>
+            </select>
+
+            <p
+              v-if="validationErrors.category_id"
+              class="field-error"
+            >
+              {{ validationErrors.category_id[0] }}
+            </p>
+          </div>
         </div>
 
         <button
           class="button button-primary submit-button"
           type="submit"
-          :disabled="isSubmitting"
+          :disabled="
+            isSubmitting ||
+            isCategoriesLoading
+          "
         >
           {{
             isSubmitting
-              ? "Submitting..."
-              : submitError
-                ? "Retry Submission"
-                : "Create Post"
+              ? "Saving to Laravel..."
+              : "Create Post"
           }}
         </button>
       </form>
@@ -303,20 +308,26 @@ h1 {
 }
 
 .section-description {
-  max-width: 720px;
+  max-width: 760px;
   color: var(--color-text-muted);
   line-height: 1.7;
 }
 
 .create-post-form,
 .success-state {
-  max-width: 760px;
+  max-width: 800px;
   margin-top: 2rem;
   padding: 2rem;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 0.75rem;
   box-shadow: var(--shadow-sm);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 .form-group {
@@ -331,8 +342,10 @@ h1 {
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group select {
   width: 100%;
+  min-height: 48px;
   padding: 0.8rem;
   color: var(--color-text);
   font: inherit;
@@ -341,22 +354,18 @@ h1 {
   border-radius: 0.4rem;
 }
 
-.form-group input {
-  min-height: 48px;
-}
-
 .form-group textarea {
   resize: vertical;
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
-  outline: 3px solid rgba(22, 131, 189, 0.25);
+.form-group textarea:focus,
+.form-group select:focus {
   border-color: var(--color-secondary);
+  outline: 3px solid rgba(22, 131, 189, 0.25);
 }
 
-.form-group input[aria-invalid="true"],
-.form-group textarea[aria-invalid="true"] {
+.form-group [aria-invalid="true"] {
   border-color: #b42318;
 }
 
@@ -403,19 +412,19 @@ h1 {
   border-color: #8bd19c;
 }
 
-.success-state h2 {
-  margin-bottom: 1rem;
-}
-
+.success-state h2,
 .success-state p {
   margin-bottom: 1rem;
-  line-height: 1.7;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 650px) {
   .create-post-form,
   .success-state {
     padding: 1.25rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 
   .field-feedback {

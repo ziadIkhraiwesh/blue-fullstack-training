@@ -1,12 +1,15 @@
 <script setup>
-import { computed, onMounted } from "vue";
-import { storeToRefs } from "pinia";
-import PostCard from "./PostCard.vue";
 import {
-  RouterLink,
+  onMounted,
+  reactive,
+  watch
+} from "vue";
+import { storeToRefs } from "pinia";
+import {
   useRoute,
   useRouter
 } from "vue-router";
+import PostCard from "./PostCard.vue";
 import { usePostsStore } from "../stores/posts";
 
 const route = useRoute();
@@ -16,141 +19,235 @@ const postsStore = usePostsStore();
 const {
   posts,
   isLoading,
-  errorMessage
+  errorMessage,
+  categories,
+  isCategoriesLoading,
+  pagination,
+  operationMessage
 } = storeToRefs(postsStore);
 
-const searchQuery = computed({
-  get() {
-    return typeof route.query.q === "string"
-      ? route.query.q
+const filterForm = reactive({
+  search: "",
+  status: "",
+  category_id: ""
+});
+
+const syncFormFromRoute = () => {
+  filterForm.search =
+    typeof route.query.search === "string"
+      ? route.query.search
       : "";
-  },
 
-  set(value) {
-    const updatedQuery = { ...route.query };
+  filterForm.status =
+    typeof route.query.status === "string"
+      ? route.query.status
+      : "";
 
-    if (value) {
-      updatedQuery.q = value;
-    } else {
-      delete updatedQuery.q;
-    }
-
-    router.replace({
-      name: "posts",
-      query: updatedQuery
-    });
-  }
-});
-
-const filteredPosts = computed(() => {
-  const normalizedSearch =
-    searchQuery.value.trim().toLowerCase();
-
-  if (!normalizedSearch) {
-    return posts.value;
-  }
-
-  return posts.value.filter((post) =>
-    post.title.toLowerCase().includes(normalizedSearch)
-  );
-});
-
-const resultMessage = computed(() => {
-  const count = filteredPosts.value.length;
-  const resultWord = count === 1 ? "result" : "results";
-
-  return `${count} ${resultWord} displayed.`;
-});
-
-const clearSearch = () => {
-  searchQuery.value = "";
+  filterForm.category_id =
+    typeof route.query.category_id === "string"
+      ? route.query.category_id
+      : "";
 };
 
-onMounted(() => {
-  if (posts.value.length === 0) {
-    postsStore.loadPosts();
+const loadPostsFromRoute = async () => {
+  syncFormFromRoute();
+
+  await postsStore.loadPosts({
+    page: Number(route.query.page) || 1,
+    search: filterForm.search,
+    status: filterForm.status,
+    category_id: filterForm.category_id
+  });
+};
+
+const applyFilters = async () => {
+  const query = {};
+
+  if (filterForm.search.trim()) {
+    query.search = filterForm.search.trim();
   }
+
+  if (filterForm.status) {
+    query.status = filterForm.status;
+  }
+
+  if (filterForm.category_id) {
+    query.category_id = filterForm.category_id;
+  }
+
+  await router.replace({
+    name: "posts",
+    query
+  });
+};
+
+const clearFilters = async () => {
+  filterForm.search = "";
+  filterForm.status = "";
+  filterForm.category_id = "";
+
+  await router.replace({
+    name: "posts"
+  });
+};
+
+const changePage = async (page) => {
+  if (
+    page < 1 ||
+    page > pagination.value.lastPage ||
+    page === pagination.value.currentPage
+  ) {
+    return;
+  }
+
+  await router.replace({
+    name: "posts",
+    query: {
+      ...route.query,
+      page
+    }
+  });
+};
+
+watch(
+  () => route.query,
+  loadPostsFromRoute,
+  {
+    immediate: true,
+    deep: true
+  }
+);
+
+onMounted(() => {
+  postsStore.loadCategories();
 });
 </script>
+
 <template>
   <section id="posts" class="section posts-section">
     <div class="container">
-      <p class="eyebrow-text">Vue REST API Integration</p>
+      <p class="eyebrow-text">
+        Vue + Laravel Full-Stack Integration
+      </p>
+
       <h2>Latest Posts</h2>
 
       <p class="section-description">
-        These posts are loaded from JSONPlaceholder using the Vue lifecycle,
-        reactive state, and computed search results.
+        These posts, categories, filters, and pagination are
+        loaded directly from the Laravel REST API and MySQL.
       </p>
 
+      <p v-if="operationMessage" class="operation-success" role="status">
+        {{ operationMessage }}
+      </p>
+
+      <form class="posts-toolbar" @submit.prevent="applyFilters">
+        <div class="filter-field search-field">
+          <label for="post-search">
+            Search by title
+          </label>
+
+          <input id="post-search" v-model="filterForm.search" type="search" placeholder="Enter a post title"
+            autocomplete="off">
+        </div>
+
+        <div class="filter-field">
+          <label for="status-filter">
+            Status
+          </label>
+
+          <select id="status-filter" v-model="filterForm.status">
+            <option value="">All statuses</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label for="category-filter">
+            Category
+          </label>
+
+          <select id="category-filter" v-model="filterForm.category_id" :disabled="isCategoriesLoading">
+            <option value="">
+              {{
+                isCategoriesLoading
+                  ? "Loading categories..."
+                  : "All categories"
+              }}
+            </option>
+
+            <option v-for="category in categories" :key="category.id" :value="String(category.id)">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <button class="button button-primary" type="submit">
+          Apply
+        </button>
+
+        <button class="button button-secondary" type="button" @click="clearFilters">
+          Clear
+        </button>
+      </form>
+
       <div v-if="isLoading" class="request-state" role="status">
-        Loading latest posts...
+        Loading posts from Laravel...
       </div>
 
       <div v-else-if="errorMessage" class="request-state error-state" role="alert">
         <p>{{ errorMessage }}</p>
 
-        <button class="button button-primary" type="button" @click="loadRequestedPost">
+        <button class="button button-primary" type="button" @click="postsStore.retryLoadPosts">
           Retry
         </button>
       </div>
 
       <div v-else-if="posts.length === 0" class="request-state" role="status">
-        No posts are currently available.
+        No matching posts were found.
       </div>
 
       <div v-else>
-        <div class="posts-toolbar">
-          <div class="search-field">
-            <label for="post-search">Search posts by title</label>
-
-            <input id="post-search" v-model="searchQuery" type="search" placeholder="Enter a post title"
-              autocomplete="off">
-          </div>
-
-          <button class="button button-secondary" type="button" :disabled="searchQuery.length === 0"
-            @click="clearSearch">
-            Clear Search
-          </button>
-        </div>
-
         <p class="result-count" aria-live="polite">
-          {{ resultMessage }}
+          {{ pagination.total }} total posts -
+          Page {{ pagination.currentPage }}
+          of {{ pagination.lastPage }}
         </p>
 
-        <div v-if="filteredPosts.length === 0" class="request-state" role="status">
-          No matching posts were found.
+        <div class="posts-grid">
+          <PostCard v-for="post in posts" :key="post.id" :post="post" :is-favorite="postsStore.isFavorite(post.id)
+            " :from-search="filterForm.search" @toggle-favorite="
+              postsStore.toggleFavorite
+            " />
         </div>
 
-        <div v-else class="posts-grid">
-          <PostCard v-for="post in filteredPosts" :key="post.id" :post="post"
-            :is-favorite="postsStore.isFavorite(post.id)" :from-search="searchQuery"
-            @toggle-favorite="postsStore.toggleFavorite" />
-        </div>
+        <nav v-if="pagination.lastPage > 1" class="pagination" aria-label="Posts pagination">
+          <button class="button button-secondary" type="button" :disabled="pagination.currentPage === 1" @click="
+            changePage(pagination.currentPage - 1)
+            ">
+            Previous
+          </button>
+
+          <span>
+            Page {{ pagination.currentPage }}
+            of {{ pagination.lastPage }}
+          </span>
+
+          <button class="button button-secondary" type="button" :disabled="pagination.currentPage ===
+            pagination.lastPage
+            " @click="
+              changePage(pagination.currentPage + 1)
+              ">
+            Next
+          </button>
+        </nav>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.read-more {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  margin-top: 1.25rem;
-  padding: 0.65rem 1rem;
-  color: #ffffff;
-  font-weight: 800;
-  text-decoration: none;
-  background-color: var(--color-secondary);
-  border-radius: 0.4rem;
-}
-
-.read-more:hover {
-  background-color: var(--color-secondary-dark);
-}
-
 .posts-section {
   background-color: var(--color-background);
 }
@@ -168,36 +265,34 @@ h2 {
 }
 
 .posts-toolbar {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    minmax(220px, 2fr) minmax(150px, 1fr) minmax(170px, 1fr) auto auto;
   align-items: end;
   gap: 1rem;
-  margin: 2rem 0 1rem;
+  margin: 2rem 0;
 }
 
-.search-field {
-  flex: 1;
+.filter-field {
+  display: grid;
+  gap: 0.5rem;
 }
 
-.search-field label {
-  display: block;
-  margin-bottom: 0.5rem;
+.filter-field label {
   color: var(--color-primary);
   font-weight: 800;
 }
 
-.search-field input {
+.filter-field input,
+.filter-field select {
   width: 100%;
   min-height: 48px;
   padding: 0.75rem;
   color: var(--color-text);
+  font: inherit;
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: 0.4rem;
-}
-
-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
 }
 
 .result-count {
@@ -228,85 +323,65 @@ button:disabled {
 
 .posts-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
   gap: 1.5rem;
 }
 
-.post-card {
-  height: 100%;
-  padding: 1.5rem;
-  overflow-wrap: anywhere;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  box-shadow: var(--shadow-sm);
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2rem;
+  gap: 1rem;
 }
 
-.post-card span {
-  display: inline-block;
-  margin-bottom: 1rem;
-  padding: 0.35rem 0.7rem;
-  color: var(--color-secondary-dark);
-  font-size: 0.8rem;
-  font-weight: 900;
-  background-color: #e5f3f9;
-  border-radius: 0.375rem;
-}
-
-.post-card h3 {
-  margin-bottom: 0.75rem;
-  color: var(--color-primary);
-  font-size: 1.15rem;
-}
-
-.post-card p {
-  color: var(--color-text-muted);
-  line-height: 1.7;
-}
-
-.favorite-button {
-  display: block;
-  min-height: 44px;
-  margin-bottom: 1rem;
-  padding: 0.6rem 0.85rem;
+.pagination span {
   color: var(--color-primary);
   font-weight: 800;
-  cursor: pointer;
-  background-color: #ffffff;
-  border: 1px solid var(--color-border);
-  border-radius: 0.4rem;
 }
 
-.favorite-button:hover,
-.favorite-button.is-favorite {
-  color: #704d00;
-  background-color: #fff4c2;
-  border-color: #d6a800;
+button:disabled,
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
-.favorite-button:focus-visible {
-  outline: 3px solid var(--color-accent);
-  outline-offset: 3px;
+.operation-success {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  color: #155724;
+  font-weight: 700;
+  background-color: #effbf2;
+  border: 1px solid #8bd19c;
+  border-radius: 0.5rem;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1100px) {
+  .posts-toolbar {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
   .posts-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 768px) {
-  .posts-toolbar {
-    align-items: stretch;
-    flex-direction: column;
+@media (max-width: 700px) {
+
+  .posts-toolbar,
+  .posts-grid {
+    grid-template-columns: 1fr;
   }
 
   .posts-toolbar .button {
     width: 100%;
   }
 
-  .posts-grid {
-    grid-template-columns: 1fr;
+  .pagination {
+    flex-wrap: wrap;
   }
 }
 </style>
