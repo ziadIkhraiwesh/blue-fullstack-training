@@ -703,3 +703,420 @@ Known remaining issues: None.
 
 No unresolved frontend blockers or known application issues remain.
 
+## Task 15: Full-Stack Integration with Laravel
+
+Task 15 connects the existing Vue frontend to the Laravel REST API and MySQL database developed during Tasks 11-14.
+
+The frontend no longer uses JSONPlaceholder. Posts, categories, authentication, validation, filtering, pagination, and CRUD operations are now connected to the local Laravel backend.
+
+### Integrated Project Structure
+
+The full-stack application uses two separate projects:
+
+```text
+task-07-vue-app       Vue frontend
+task-11-laravel-api   Laravel backend
+```
+
+Both applications must run locally at the same time.
+
+### Requirements
+
+Before running the integrated application, install:
+
+- Node.js and npm
+- PHP
+- Composer
+- MySQL
+- Laravel backend dependencies
+- Vue frontend dependencies
+
+### Frontend Environment Configuration
+
+Create a `.env.local` file inside `task-07-vue-app`:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+The repository includes `.env.example` with the required variable name.
+
+Do not place passwords, access tokens, secret keys, or personal credentials inside environment files committed to Git.
+
+### Backend Setup
+
+Open a terminal inside:
+
+```text
+task-11-laravel-api
+```
+
+Install backend dependencies:
+
+```bash
+composer install
+```
+
+Create the local Laravel environment file when necessary:
+
+```bash
+cp .env.example .env
+php artisan key:generate
+```
+
+Configure the local MySQL connection in `.env`, then run:
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+Start Laravel:
+
+```bash
+php artisan serve
+```
+
+The backend runs locally at:
+
+```text
+http://127.0.0.1:8000
+```
+
+The REST API base URL is:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+### Backend CORS
+
+Laravel CORS is configured to allow requests from the local Vite development origins:
+
+```text
+http://localhost:5173
+http://127.0.0.1:5173
+```
+
+CORS remains restricted to the required frontend origins rather than being disabled globally.
+
+The frontend uses Bearer token authentication, so cookie credentials are not enabled.
+
+### Frontend Setup
+
+Open another terminal inside:
+
+```text
+task-07-vue-app
+```
+
+Install frontend dependencies:
+
+```bash
+npm install
+```
+
+Start the Vite development server:
+
+```bash
+npm run dev
+```
+
+The frontend is available at:
+
+```text
+http://localhost:5173
+```
+
+### Run Both Applications
+
+The integrated application requires two running terminals:
+
+Terminal 1:
+
+```bash
+cd task-11-laravel-api
+php artisan serve
+```
+
+Terminal 2:
+
+```bash
+cd task-07-vue-app
+npm run dev
+```
+
+MySQL must also be running.
+
+### API Client
+
+Axios is configured in:
+
+```text
+src/services/apiClient.js
+```
+
+The centralized API client:
+
+- Uses `VITE_API_BASE_URL`.
+- Sends `Accept: application/json`.
+- Sends JSON request bodies.
+- Adds the current Bearer token automatically.
+- Handles network and Laravel API errors.
+- Extracts Laravel validation errors.
+
+### Authentication Flow
+
+Vue authentication is managed using Pinia and Laravel Sanctum.
+
+The flow is:
+
+1. The user submits email and password through the Vue login form.
+2. Vue sends the credentials to `POST /api/login`.
+3. Laravel validates the credentials and returns a Sanctum access token.
+4. Vue stores the token locally for the current application session.
+5. Axios adds the token to protected requests.
+6. Vue calls `GET /api/me` to restore the authenticated user.
+7. The Header displays the authenticated user's name.
+8. Logout calls `POST /api/logout`.
+9. Laravel revokes the current token.
+10. Vue removes the local authentication state.
+
+Passwords and hardcoded access tokens are not stored in source code.
+
+### Authentication Endpoints
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/api/login` | Authenticate the user and receive a token |
+| GET | `/api/me` | Retrieve the authenticated user |
+| POST | `/api/logout` | Revoke the current access token |
+
+### Posts Integration
+
+Posts are loaded from:
+
+```http
+GET /api/posts
+```
+
+Each post displays:
+
+- ID
+- Title
+- Body
+- Status
+- Category
+- Author
+
+The interface includes clear loading, empty, network-error, and not-found states.
+
+### Categories Integration
+
+Categories are loaded dynamically from:
+
+```http
+GET /api/categories
+```
+
+The Laravel category list is used in:
+
+- The Posts category filter.
+- The Create Post form.
+- The Edit Post form.
+
+No hardcoded category list is maintained in Vue.
+
+### Create Post Flow
+
+An authenticated user can create a post through Vue.
+
+Vue sends:
+
+```http
+POST /api/posts
+```
+
+Example request:
+
+```json
+{
+  "title": "Vue Laravel Integration",
+  "body": "This post was created from the Vue interface.",
+  "status": "published",
+  "category_id": 1
+}
+```
+
+The client does not send `user_id`. Laravel assigns the authenticated user automatically.
+
+After creation:
+
+- Laravel saves the post in MySQL.
+- The API returns the post with category and author data.
+- Vue displays a success state.
+- Pinia reloads the first page from Laravel.
+- No full browser refresh is required.
+
+### Update and Delete
+
+The post details page allows an authenticated owner to:
+
+```http
+PUT /api/posts/{id}
+DELETE /api/posts/{id}
+```
+
+After updating, Pinia replaces the local post with the Laravel response.
+
+After deleting, Pinia removes the record and reloads the appropriate backend page.
+
+Users who do not own a post cannot access the update and delete controls. The frontend also handles a `403 Forbidden` response defensively if Laravel rejects an operation.
+
+### Authorization
+
+Laravel remains the source of truth for authorization.
+
+Vue uses the authenticated user and post author information to communicate ownership clearly, while Laravel `PostPolicy` enforces the actual update and delete permissions.
+
+A user viewing another user's post receives a clear permission message and cannot use the owner controls.
+
+### Laravel Validation Errors
+
+Laravel validation responses use status:
+
+```text
+422 Unprocessable Content
+```
+
+Vue extracts the backend `errors` object and displays messages next to the relevant fields.
+
+Handled fields include:
+
+- `title`
+- `body`
+- `status`
+- `category_id`
+
+The form preserves entered values after validation failure.
+
+### Filtering and Pagination
+
+The frontend sends search and filter values to Laravel using backend query parameters.
+
+Supported examples:
+
+```http
+GET /api/posts?search=Laravel
+GET /api/posts?status=published
+GET /api/posts?category_id=1
+GET /api/posts?search=Laravel&status=published&page=2
+```
+
+Pagination uses Laravel response metadata:
+
+- Current page
+- Last page
+- Per-page count
+- Total records
+
+The browser does not fetch all records and simulate pagination locally.
+
+### Pinia State Synchronization
+
+Pinia stores manage:
+
+- Authentication state.
+- Access token state.
+- Posts.
+- Current post.
+- Categories.
+- Search and filter values.
+- Backend pagination.
+- Validation errors.
+- Loading states.
+- CRUD success and error messages.
+- Favorite post IDs.
+
+After create, update, or delete operations, the Vue state remains synchronized with Laravel without requiring a full browser refresh.
+
+### Error Handling
+
+The Vue interface handles:
+
+- Backend unavailable or network failure.
+- Invalid login credentials.
+- Laravel validation errors.
+- Unauthenticated protected access.
+- Forbidden ownership operations.
+- Missing posts with `404 Not Found`.
+- Empty responses.
+- Loading states.
+
+Errors are displayed clearly instead of failing silently.
+
+### End-to-End Verification
+
+The following flow was tested:
+
+- Starting Laravel, Vue, and MySQL.
+- Logging in from Vue through Laravel Sanctum.
+- Restoring the authenticated user with `/api/me`.
+- Loading posts from Laravel.
+- Loading categories from Laravel.
+- Creating a post from Vue.
+- Confirming the created record in MySQL.
+- Updating the post from Vue.
+- Deleting the post from Vue.
+- Displaying backend validation errors.
+- Searching and filtering through Laravel query parameters.
+- Navigating Laravel pagination.
+- Logging out and protecting authenticated views.
+- Displaying ownership restrictions.
+- Handling a missing post.
+- Handling a stopped backend server.
+- Retesting responsive layouts.
+
+### Testing and Production Build
+
+Run the unit tests:
+
+```bash
+npm test
+```
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+The updated tests cover Laravel response structures, backend pagination metadata, API validation errors, post resources, and successful form submission.
+
+### Task 15 Screenshot Evidence
+
+Full-stack testing screenshots are available in:
+
+```text
+screenshots/task-15/
+```
+
+The evidence includes:
+
+- Successful login and authenticated user state.
+- Posts loaded from Laravel.
+- Categories loaded into the Vue form.
+- Post creation from Vue.
+- MySQL persistence.
+- Post update from Vue.
+- Post deletion from Vue.
+- Laravel validation displayed in Vue.
+- Backend filtering and pagination.
+- Unauthenticated UI handling.
+- Authorization and ownership handling.
+
+### Task 15 Status
+
+Task 15 is complete. The Vue frontend is connected to the Laravel REST API and MySQL database with authentication, protected requests, posts, categories, end-to-end CRUD, backend validation, authorization, filtering, pagination, synchronized Pinia state, error handling, responsive testing, and documentation.
+
+No remaining implementation blockers were encountered.
