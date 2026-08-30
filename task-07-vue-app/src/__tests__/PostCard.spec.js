@@ -12,9 +12,17 @@ import PostCard from "../components/PostCard.vue";
 
 const testPost = {
   id: 7,
-  userId: 1,
-  title: "A reusable post card",
-  body: "This is the body of the reusable post card."
+  title: "A Laravel post card",
+  body: "This post was loaded from the Laravel REST API.",
+  status: "published",
+  category: {
+    id: 1,
+    name: "Technology"
+  },
+  author: {
+    id: 1,
+    name: "Test User A"
+  }
 };
 
 const mountPostCard = (isFavorite = false) =>
@@ -30,18 +38,22 @@ const mountPostCard = (isFavorite = false) =>
       }
     }
   });
+
 describe("PostCard", () => {
-  it("renders important post content", () => {
+  it("renders Laravel post content", () => {
     const wrapper = mountPostCard();
 
     expect(wrapper.text()).toContain("Post 7");
     expect(wrapper.text()).toContain(
-      "A reusable post card"
+      "A Laravel post card"
     );
     expect(wrapper.text()).toContain(
-      "This is the body of the reusable post card."
+      "This post was loaded from the Laravel REST API."
     );
-    expect(wrapper.text()).toContain("Read More");
+    expect(wrapper.text()).toContain("published");
+    expect(wrapper.text()).toContain("Technology");
+    expect(wrapper.text()).toContain("Test User A");
+    expect(wrapper.text()).toContain("View Details");
   });
 
   it("emits the post ID when the favorite button is clicked", async () => {

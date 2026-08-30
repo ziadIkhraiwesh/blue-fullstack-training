@@ -18,7 +18,10 @@ import { usePostsStore } from "../stores/posts";
 vi.mock("../services/postsApi", () => ({
   fetchPosts: vi.fn(),
   fetchPostById: vi.fn(),
-  createPost: vi.fn()
+  fetchCategories: vi.fn(),
+  createPost: vi.fn(),
+  updatePost: vi.fn(),
+  deletePost: vi.fn()
 }));
 
 describe("posts store", () => {
@@ -58,15 +61,31 @@ describe("posts store", () => {
     expect(store.favoriteCount).toBe(2);
   });
 
-  it("loads posts through the mocked API service", async () => {
-    fetchPosts.mockResolvedValue([
-      {
-        id: 1,
-        userId: 1,
-        title: "First test post",
-        body: "Test post content"
+  it("loads paginated posts from the Laravel API service", async () => {
+    fetchPosts.mockResolvedValue({
+      data: [
+        {
+          id: 1,
+          title: "First Laravel test post",
+          body: "Test post content",
+          status: "published",
+          category: {
+            id: 1,
+            name: "Technology"
+          },
+          author: {
+            id: 1,
+            name: "Test User A"
+          }
+        }
+      ],
+      meta: {
+        current_page: 1,
+        last_page: 2,
+        per_page: 5,
+        total: 6
       }
-    ]);
+    });
 
     const store = usePostsStore();
 
@@ -74,7 +93,12 @@ describe("posts store", () => {
 
     expect(fetchPosts).toHaveBeenCalledTimes(1);
     expect(store.posts).toHaveLength(1);
-    expect(store.posts[0].title).toBe("First test post");
+    expect(store.posts[0].title).toBe(
+      "First Laravel test post"
+    );
+    expect(store.pagination.currentPage).toBe(1);
+    expect(store.pagination.lastPage).toBe(2);
+    expect(store.pagination.total).toBe(6);
     expect(store.isLoading).toBe(false);
     expect(store.errorMessage).toBe("");
   });

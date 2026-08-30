@@ -12,14 +12,19 @@ import {
 import { createPinia } from "pinia";
 
 import {
-  createPost
+  createPost,
+  fetchCategories,
+  fetchPosts
 } from "../services/postsApi";
 import CreatePostView from "../views/CreatePostView.vue";
 
 vi.mock("../services/postsApi", () => ({
   fetchPosts: vi.fn(),
   fetchPostById: vi.fn(),
-  createPost: vi.fn()
+  fetchCategories: vi.fn(),
+  createPost: vi.fn(),
+  updatePost: vi.fn(),
+  deletePost: vi.fn()
 }));
 
 const mountCreatePostView = () => {
@@ -35,61 +40,127 @@ const mountCreatePostView = () => {
 describe("CreatePostView", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    fetchCategories.mockResolvedValue([
+      {
+        id: 1,
+        name: "Technology",
+        slug: "technology"
+      }
+    ]);
+
+    fetchPosts.mockResolvedValue({
+      data: [],
+      meta: {
+        current_page: 1,
+        last_page: 1,
+        per_page: 5,
+        total: 0
+      }
+    });
   });
 
-  it("blocks an empty submission and displays field errors", async () => {
-    const wrapper = mountCreatePostView();
-
-    await wrapper.get("form").trigger("submit");
-
-    expect(wrapper.text()).toContain(
-      "Title is required."
-    );
-    expect(wrapper.text()).toContain(
-      "Post content is required."
-    );
-    expect(wrapper.text()).toContain(
-      "User ID is required."
-    );
-    expect(createPost).not.toHaveBeenCalled();
-  });
-
-  it("shows the success state after a valid mocked submission", async () => {
-    createPost.mockResolvedValue({
-      id: 101,
-      title: "Testing Vue form submission",
-      body: "This is valid content for the mocked post request.",
-      userId: 1
+  it("displays Laravel validation errors", async () => {
+    createPost.mockRejectedValue({
+      response: {
+        status: 422,
+        data: {
+          message:
+            "The title field is required. (and 2 more errors)",
+          errors: {
+            title: [
+              "The title field is required."
+            ],
+            body: [
+              "The body field is required."
+            ],
+            category_id: [
+              "The category id field is required."
+            ]
+          }
+        }
+      }
     });
 
     const wrapper = mountCreatePostView();
 
+    await flushPromises();
+    await wrapper.get("form").trigger("submit");
+    await flushPromises();
+
+    expect(createPost).toHaveBeenCalledWith({
+      title: "",
+      body: "",
+      status: "draft",
+      category_id: null
+    });
+
+    expect(wrapper.text()).toContain(
+      "The title field is required."
+    );
+    expect(wrapper.text()).toContain(
+      "The body field is required."
+    );
+    expect(wrapper.text()).toContain(
+      "The category id field is required."
+    );
+  });
+
+  it("shows success after a Laravel post is created", async () => {
+    createPost.mockResolvedValue({
+      id: 101,
+      title: "Testing Laravel form submission",
+      body:
+        "This content is persisted through the Laravel API.",
+      status: "published",
+      category: {
+        id: 1,
+        name: "Technology"
+      },
+      author: {
+        id: 1,
+        name: "Test User A"
+      }
+    });
+
+    const wrapper = mountCreatePostView();
+
+    await flushPromises();
+
     await wrapper
       .get("#post-title")
-      .setValue("Testing Vue form submission");
+      .setValue("Testing Laravel form submission");
 
     await wrapper
       .get("#post-body")
       .setValue(
-        "This is valid content for the mocked post request."
+        "This content is persisted through the Laravel API."
       );
 
     await wrapper
-      .get("#post-user-id")
+      .get("#post-status")
+      .setValue("published");
+
+    await wrapper
+      .get("#post-category")
       .setValue("1");
 
     await wrapper.get("form").trigger("submit");
     await flushPromises();
 
     expect(createPost).toHaveBeenCalledWith({
-      title: "Testing Vue form submission",
-      body: "This is valid content for the mocked post request.",
-      userId: 1
+      title: "Testing Laravel form submission",
+      body:
+        "This content is persisted through the Laravel API.",
+      status: "published",
+      category_id: 1
     });
 
     expect(wrapper.text()).toContain(
       "Post created successfully"
     );
     expect(wrapper.text()).toContain("101");
+    expect(wrapper.text()).toContain("Test User A");
+    expect(wrapper.text()).toContain("Technology");
   });
 });
