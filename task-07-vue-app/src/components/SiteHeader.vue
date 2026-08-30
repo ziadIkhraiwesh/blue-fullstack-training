@@ -1,59 +1,122 @@
 <script setup>
 import {
   RouterLink,
-  useRoute
+  useRoute,
+  useRouter
 } from "vue-router";
 import { usePostsStore } from "../stores/posts";
+import { useAuthStore } from "../stores/auth";
 
 const route = useRoute();
+const router = useRouter();
 const postsStore = usePostsStore();
+const authStore = useAuthStore();
+
+const handleLogout = async () => {
+  await authStore.logout();
+  await router.push("/login");
+};
 </script>
+
 <template>
   <header class="site-header">
     <div class="container header-content">
-      <RouterLink class="logo" to="/" exact-active-class="is-logo-active">
+      <RouterLink
+        class="logo"
+        to="/"
+        exact-active-class="is-logo-active"
+      >
         NexaTech<span>.</span>
       </RouterLink>
 
       <nav aria-label="Main navigation">
         <ul class="navigation-list">
           <li>
-            <RouterLink to="/" exact-active-class="is-active">
+            <RouterLink
+              to="/"
+              exact-active-class="is-active"
+            >
               Home
             </RouterLink>
           </li>
 
           <li>
-            <RouterLink to="/projects" active-class="is-active">
+            <RouterLink
+              to="/projects"
+              active-class="is-active"
+            >
               Projects
             </RouterLink>
           </li>
 
           <li>
-            <RouterLink to="/posts" active-class="is-active" :class="{
-              'is-active':
-                route.path.startsWith('/posts') &&
-                route.name !== 'create-post'
-            }">
+            <RouterLink
+              to="/posts"
+              active-class="is-active"
+              :class="{
+                'is-active':
+                  route.path.startsWith('/posts') &&
+                  route.name !== 'create-post'
+              }"
+            >
               Posts
             </RouterLink>
-
           </li>
+
           <li>
-            <RouterLink to="/posts/create" active-class="is-active">
+            <RouterLink
+              to="/posts/create"
+              active-class="is-active"
+            >
               Create Post
             </RouterLink>
           </li>
-          <RouterLink to="/favorites" active-class="is-active">
-            Favorites
-            <span class="favorite-count">
-              {{ postsStore.favoriteCount }}
-            </span>
-          </RouterLink>
 
           <li>
-            <RouterLink to="/contact" active-class="is-active">
+            <RouterLink
+              to="/favorites"
+              active-class="is-active"
+            >
+              Favorites
+              <span class="favorite-count">
+                {{ postsStore.favoriteCount }}
+              </span>
+            </RouterLink>
+          </li>
+
+          <li>
+            <RouterLink
+              to="/contact"
+              active-class="is-active"
+            >
               Contact
+            </RouterLink>
+          </li>
+
+          <li
+            v-if="authStore.isAuthenticated"
+            class="auth-status"
+          >
+            <span class="user-indicator">
+              {{ authStore.user?.name || "Authenticated User" }}
+            </span>
+
+            <button
+              class="logout-button"
+              type="button"
+              :disabled="authStore.isLoading"
+              @click="handleLogout"
+            >
+              Logout
+            </button>
+          </li>
+
+          <li v-else>
+            <RouterLink
+              to="/login"
+              active-class="is-active"
+            >
+              Login
             </RouterLink>
           </li>
         </ul>
@@ -94,7 +157,7 @@ const postsStore = usePostsStore();
 .navigation-list {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
   list-style: none;
 }
 
@@ -143,7 +206,39 @@ const postsStore = usePostsStore();
   border-radius: 999px;
 }
 
-@media (max-width: 600px) {
+.auth-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.user-indicator {
+  padding: 0.4rem 0.7rem;
+  color: var(--color-primary);
+  font-size: 0.85rem;
+  font-weight: 800;
+  background-color: #eef5f8;
+  border-radius: 999px;
+}
+
+.logout-button {
+  padding: 0.5rem 0.75rem;
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  background-color: var(--color-primary);
+  border: 0;
+  border-radius: 0.45rem;
+  cursor: pointer;
+}
+
+.logout-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+@media (max-width: 900px) {
   .header-content {
     align-items: flex-start;
     flex-direction: column;

@@ -1,38 +1,42 @@
-const DEFAULT_API_BASE_URL =
-  "https://jsonplaceholder.typicode.com";
+import apiClient from "./apiClient";
 
-const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL ||
-  DEFAULT_API_BASE_URL
-).replace(/\/$/, "");
+export const fetchPosts = async (params = {}) => {
+    const response = await apiClient.get("/posts", {
+        params
+    });
 
-const POSTS_API_URL = `${API_BASE_URL}/posts`;
-const requestJson = async (url, options = {}) => {
-  const response = await fetch(url, options);
-
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}.`);
-  }
-
-  return response.json();
-};
-
-export const fetchPosts = async () => {
-  const posts = await requestJson(POSTS_API_URL);
-
-  return posts.slice(0, 9);
+    return response.data;
 };
 
 export const fetchPostById = async (postId) => {
-  return requestJson(`${POSTS_API_URL}/${postId}`);
+    const response = await apiClient.get(`/posts/${postId}`);
+
+    return response.data.data;
+};
+
+export const fetchCategories = async () => {
+    const response = await apiClient.get("/categories");
+
+    return response.data.data;
 };
 
 export const createPost = async (postData) => {
-  return requestJson(POSTS_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(postData)
-  });
+    const response = await apiClient.post("/posts", postData);
+
+    return response.data.data;
+};
+
+export const updatePost = async (postId, postData) => {
+    const response = await apiClient.put(
+        `/posts/${postId}`,
+        postData
+    );
+
+    return response.data.data;
+};
+
+export const deletePost = async (postId) => {
+    const response = await apiClient.delete(`/posts/${postId}`);
+
+    return response.data;
 };

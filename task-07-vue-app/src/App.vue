@@ -2,10 +2,13 @@
 import { RouterView } from "vue-router";
 import SiteHeader from "./components/SiteHeader.vue";
 import { usePostsStore } from "./stores/posts";
+import { useAuthStore } from "./stores/auth";
 
 const postsStore = usePostsStore();
+const authStore = useAuthStore();
 
 postsStore.restoreFavorites();
+authStore.restoreAuthentication();
 </script>
 
 <template>
