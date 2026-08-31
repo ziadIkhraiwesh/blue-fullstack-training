@@ -1120,3 +1120,192 @@ The evidence includes:
 Task 15 is complete. The Vue frontend is connected to the Laravel REST API and MySQL database with authentication, protected requests, posts, categories, end-to-end CRUD, backend validation, authorization, filtering, pagination, synchronized Pinia state, error handling, responsive testing, and documentation.
 
 No remaining implementation blockers were encountered.
+
+## Task 16: Integration Completion, Route Protection and Error Handling
+
+Task 16 stabilizes and strengthens the Vue and Laravel full-stack integration completed during Task 15.
+
+The application now includes stronger route protection, expired-token handling, authorization-aware controls, organized API services, improved error messages, and additional regression testing.
+
+### Frontend Route Protection
+
+Authenticated frontend routes use Vue Router metadata:
+
+```js
+meta: {
+  requiresAuth: true
+}
+```
+
+The global navigation guard checks the Pinia authentication state before allowing access.
+
+Unauthenticated users who attempt to access a protected page are redirected to Login with the requested path preserved:
+
+```text
+/login?redirect=/posts/create
+```
+
+After successful login, the user returns to the originally requested page.
+
+### Invalid and Expired Tokens
+
+The Axios response interceptor handles `401 Unauthorized` responses globally.
+
+When Laravel rejects an invalid or expired token, Vue:
+
+1. Removes the invalid token from local storage.
+2. Clears the authenticated user from Pinia.
+3. Hides authenticated controls.
+4. Redirects the user to Login.
+5. Preserves the requested route.
+6. Displays a clear session-expired message.
+
+Example message:
+
+```text
+Your session has expired. Please log in again.
+```
+
+### Authorization-Aware Interface
+
+Laravel remains the final authority for post ownership.
+
+Vue compares the authenticated user with the post author and only displays Edit and Delete controls when the current user owns the post.
+
+When another authenticated user views the post:
+
+- Edit and Delete controls are hidden.
+- A clear ownership message is displayed.
+- Laravel `PostPolicy` still protects the backend.
+- Any forced forbidden operation receives and displays a `403` error.
+
+Example:
+
+```text
+You are not allowed to delete this post.
+```
+
+### Reusable API Services
+
+Frontend API requests are separated into reusable services:
+
+```text
+src/services/apiClient.js
+src/services/authApi.js
+src/services/postsApi.js
+src/services/categoriesApi.js
+```
+
+Responsibilities:
+
+- `apiClient.js`: base URL, JSON headers, Bearer token, response interceptors, and shared error helpers.
+- `authApi.js`: login, authenticated user, and logout requests.
+- `postsApi.js`: post list, details, create, update, and delete requests.
+- `categoriesApi.js`: category list requests.
+
+The API base URL remains in environment configuration:
+
+```env
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+### User-Facing Error States
+
+The integrated interface handles:
+
+| Status or Condition | Frontend Behavior |
+|---|---|
+| Loading | Displays a loading state and disables repeated actions |
+| Empty result | Displays a clear empty-state message |
+| `401 Unauthorized` | Clears authentication and redirects to Login |
+| `403 Forbidden` | Displays an authorization message |
+| `404 Not Found` | Displays a Post Not Found state |
+| `422 Validation` | Displays Laravel errors next to form fields |
+| Network failure | Displays a backend connection error |
+| Server error | Displays a safe retry-later message |
+| Success | Displays create, update, and delete confirmation |
+
+Duplicate create, update, delete, login, and logout actions are prevented while requests are in progress.
+
+### Security Review
+
+The following checks were completed:
+
+- `.env` and `.env.local` remain excluded from Git.
+- Passwords are not hardcoded in source code.
+- Access tokens are not committed.
+- API secrets are not exposed.
+- The frontend cannot assign arbitrary post ownership.
+- Laravel validation remains active.
+- Laravel Sanctum protects write endpoints.
+- Laravel `PostPolicy` enforces update and delete ownership.
+- CORS remains restricted to the required local frontend origins.
+- Vue hides unauthorized owner controls without replacing backend authorization.
+
+### Regression Testing
+
+The complete integrated flow was retested:
+
+- Login and logout.
+- Authenticated user restoration.
+- Invalid and expired token handling.
+- Protected frontend routes.
+- Posts and Categories from Laravel.
+- Create, update, and delete from Vue.
+- Pinia synchronization without a full-page refresh.
+- Backend search and filtering.
+- Backend pagination.
+- Laravel validation errors.
+- Network failure.
+- `401`, `403`, and `404` states.
+- Authorization-aware UI.
+- Responsive desktop and mobile layouts.
+- Vue unit tests and production build.
+- Laravel tests and API routes.
+
+### Updated Automated Tests
+
+The test suite includes:
+
+- Laravel Post Resource rendering in Vue.
+- Backend pagination response handling.
+- Laravel validation error rendering.
+- Successful integrated post creation.
+- Favorite state behavior.
+- Authentication token storage.
+- Authentication cleanup after logout.
+
+Run tests:
+
+```bash
+npm test
+```
+
+Run the production build:
+
+```bash
+npm run build
+```
+
+### Task 16 Screenshot Evidence
+
+Testing evidence is available in:
+
+```text
+screenshots/task-16/
+```
+
+The evidence includes:
+
+- Authenticated user and Laravel posts.
+- Successful create, update, and delete.
+- Laravel validation errors.
+- Expired-token handling.
+- Forbidden ownership handling.
+- Responsive mobile layout.
+
+### Task 16 Status
+
+Task 16 is complete. The full-stack integration was stabilized with protected routes, global expired-token handling, authorization-aware controls, organized reusable API services, detailed user-facing error states, security review, regression testing, automated tests, and responsive verification.
+
+No remaining implementation blockers were encountered.
