@@ -13,20 +13,23 @@ import { createPinia } from "pinia";
 
 import {
   createPost,
-  fetchCategories,
   fetchPosts
 } from "../services/postsApi";
+import {
+  fetchCategories
+} from "../services/categoriesApi";
 import CreatePostView from "../views/CreatePostView.vue";
 
 vi.mock("../services/postsApi", () => ({
   fetchPosts: vi.fn(),
   fetchPostById: vi.fn(),
-  fetchCategories: vi.fn(),
   createPost: vi.fn(),
   updatePost: vi.fn(),
   deletePost: vi.fn()
 }));
-
+vi.mock("../services/categoriesApi", () => ({
+  fetchCategories: vi.fn()
+}));
 const mountCreatePostView = () => {
   const pinia = createPinia();
 

@@ -18,10 +18,12 @@ import { usePostsStore } from "../stores/posts";
 vi.mock("../services/postsApi", () => ({
   fetchPosts: vi.fn(),
   fetchPostById: vi.fn(),
-  fetchCategories: vi.fn(),
   createPost: vi.fn(),
   updatePost: vi.fn(),
   deletePost: vi.fn()
+}));
+vi.mock("../services/categoriesApi", () => ({
+  fetchCategories: vi.fn()
 }));
 
 describe("posts store", () => {
