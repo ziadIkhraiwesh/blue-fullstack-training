@@ -1,6 +1,10 @@
 import axios from "axios";
 
-export const AUTH_TOKEN_STORAGE_KEY = "nexatech-auth-token";
+export const AUTH_TOKEN_STORAGE_KEY =
+    "nexatech-auth-token";
+
+export const AUTH_UNAUTHORIZED_EVENT =
+    "nexatech:unauthorized";
 
 const API_BASE_URL = (
     import.meta.env.VITE_API_BASE_URL ||
@@ -16,14 +20,45 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-    const token = localStorage.getItem(AUTH_TOKEN_STORAGE_KEY);
+    const token = localStorage.getItem(
+        AUTH_TOKEN_STORAGE_KEY
+    );
 
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        config.headers.Authorization =
+            `Bearer ${token}`;
     }
 
     return config;
 });
+
+apiClient.interceptors.response.use(
+    (response) => response,
+
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem(
+                AUTH_TOKEN_STORAGE_KEY
+            );
+
+            if (typeof window !== "undefined") {
+                window.dispatchEvent(
+                    new CustomEvent(
+                        AUTH_UNAUTHORIZED_EVENT,
+                        {
+                            detail: {
+                                message:
+                                    "Your session has expired. Please log in again."
+                            }
+                        }
+                    )
+                );
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
 
 export const getApiErrorMessage = (
     error,
@@ -33,7 +68,28 @@ export const getApiErrorMessage = (
         return "Unable to connect to the backend server.";
     }
 
-    return error.response.data?.message || fallbackMessage;
+    const status = error.response.status;
+
+    if (status === 401) {
+        return "Your session has expired. Please log in again.";
+    }
+
+    if (status === 403) {
+        return "You are not allowed to perform this action.";
+    }
+
+    if (status === 404) {
+        return "The requested resource could not be found.";
+    }
+
+    if (status >= 500) {
+        return "The server encountered an error. Please try again later.";
+    }
+
+    return (
+        error.response.data?.message ||
+        fallbackMessage
+    );
 };
 
 export const getValidationErrors = (error) => {

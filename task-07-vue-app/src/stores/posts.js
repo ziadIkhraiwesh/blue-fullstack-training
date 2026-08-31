@@ -2,11 +2,13 @@ import { defineStore } from "pinia";
 import {
     createPost,
     deletePost,
-    fetchCategories,
     fetchPostById,
     fetchPosts,
     updatePost
 } from "../services/postsApi";
+import {
+    fetchCategories
+} from "../services/categoriesApi";
 import {
     getApiErrorMessage,
     getValidationErrors

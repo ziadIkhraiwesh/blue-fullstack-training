@@ -13,13 +13,6 @@ export const fetchPostById = async (postId) => {
 
     return response.data.data;
 };
-
-export const fetchCategories = async () => {
-    const response = await apiClient.get("/categories");
-
-    return response.data.data;
-};
-
 export const createPost = async (postData) => {
     const response = await apiClient.post("/posts", postData);
 
