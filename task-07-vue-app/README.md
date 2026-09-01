@@ -1309,3 +1309,300 @@ The evidence includes:
 Task 16 is complete. The full-stack integration was stabilized with protected routes, global expired-token handling, authorization-aware controls, organized reusable API services, detailed user-facing error states, security review, regression testing, automated tests, and responsive verification.
 
 No remaining implementation blockers were encountered.
+
+## Task 17: Automated Testing, Regression QA and Finalization
+
+Task 17 reviews and stabilizes the complete Vue and Laravel application through automated testing, end-to-end regression QA, security checks, code-quality review, and updated run documentation.
+
+### Required Software
+
+The integrated application requires:
+
+- PHP 8.2 or later
+- Composer
+- MySQL
+- Node.js and npm
+- A modern web browser
+- Git
+- Postman is optional for direct API testing
+
+### Backend Setup
+
+Open the Laravel project:
+
+```bash
+cd task-11-laravel-api
+```
+
+Install PHP dependencies:
+
+```bash
+composer install
+```
+
+Create the local environment file:
+
+```bash
+copy .env.example .env
+```
+
+Generate the application key:
+
+```bash
+php artisan key:generate
+```
+
+Configure the following database environment variables without committing real credentials:
+
+```text
+DB_CONNECTION
+DB_HOST
+DB_PORT
+DB_DATABASE
+DB_USERNAME
+DB_PASSWORD
+```
+
+Run the database migrations and seeders:
+
+```bash
+php artisan migrate
+php artisan db:seed
+```
+
+Start the Laravel server:
+
+```bash
+php artisan serve
+```
+
+The backend normally runs at:
+
+```text
+http://127.0.0.1:8000
+```
+
+### Frontend Setup
+
+Open the Vue project:
+
+```bash
+cd task-07-vue-app
+```
+
+Install JavaScript dependencies:
+
+```bash
+npm install
+```
+
+Create `.env.local` and configure the API base URL:
+
+```text
+VITE_API_BASE_URL=http://127.0.0.1:8000/api
+```
+
+Start the Vue development server:
+
+```bash
+npm run dev
+```
+
+The frontend normally runs at:
+
+```text
+http://localhost:5173
+```
+
+### Authentication Overview
+
+Laravel Sanctum provides token-based API authentication.
+
+The main authentication flow is:
+
+1. The user submits login credentials from Vue.
+2. Vue sends the login request to Laravel.
+3. Laravel validates the credentials and returns an access token.
+4. The frontend stores the token locally.
+5. The reusable Axios client adds the Bearer token to protected API requests.
+6. Laravel Sanctum authenticates the request.
+7. Invalid or expired tokens return `401 Unauthorized`.
+8. Vue clears expired authentication data and redirects the user to the login page.
+
+Passwords are hashed by Laravel and are never returned in API responses.
+
+### Authorization and Ownership
+
+Every created post is automatically assigned to the authenticated user.
+
+Laravel Policies enforce ownership rules:
+
+- Post owners can update their posts.
+- Post owners can delete their posts.
+- Other users receive `403 Forbidden`.
+- The frontend hides Edit and Delete controls when the authenticated user is not the post owner.
+
+Authorization is enforced by Laravel even if a user attempts to bypass the frontend interface.
+
+### Main Full-Stack Flow
+
+The primary integrated flow is:
+
+```text
+Vue Interface
+→ Pinia Store
+→ Reusable API Service
+→ Laravel REST API
+→ Validation and Authorization
+→ Eloquent Models
+→ MySQL Database
+→ JSON API Response
+→ Updated Pinia State
+→ Updated Vue Interface
+```
+
+### Laravel Feature Tests
+
+Task 17 adds meaningful Laravel Feature Tests for:
+
+- Successful registration and token creation.
+- Successful login.
+- Authenticated user retrieval.
+- Logout and token invalidation.
+- Invalid login credentials.
+- Unauthenticated protected access.
+- Authenticated post creation and ownership.
+- Post validation failure.
+- Forbidden update of another user's post.
+- Forbidden deletion of another user's post.
+- Paginated posts listing.
+- Missing post and `404` behavior.
+
+Run all Laravel tests:
+
+```bash
+php artisan test
+```
+
+Run the authentication tests only:
+
+```bash
+php artisan test --filter=AuthenticationApiTest
+```
+
+Run the posts tests only:
+
+```bash
+php artisan test --filter=PostApiTest
+```
+
+Laravel tests use an in-memory SQLite testing database and do not modify the local MySQL development database.
+
+### Vue Automated Tests
+
+The Vue test suite covers:
+
+- Authentication state after login.
+- Authentication cleanup after logout.
+- Posts rendering and API loading.
+- Form validation behavior.
+- Post card behavior.
+- Pinia state after a successful update.
+- Pinia state after a successful deletion.
+- Favorites storage behavior.
+
+Run the Vue tests:
+
+```bash
+npm run test
+```
+
+Create the production build:
+
+```bash
+npm run build
+```
+
+### Regression QA Completed
+
+The following scenarios were retested:
+
+- Login and logout.
+- Authenticated user retrieval.
+- Protected frontend routes.
+- Expired and invalid token handling.
+- Posts and categories loading.
+- Search, status filtering, category filtering, and sorting.
+- Pagination and page navigation.
+- Create, read, update, and delete operations.
+- Database persistence after CRUD operations.
+- Laravel validation errors.
+- `401 Unauthorized` handling.
+- `403 Forbidden` ownership behavior.
+- `404 Not Found` handling.
+- Routed-page browser refresh.
+- Loading, empty, success, and error states.
+- Responsive mobile layout.
+- Laravel automated tests.
+- Vue automated tests.
+- Vue production build.
+
+### Security Review
+
+The following security checks were completed:
+
+- Frontend and backend environment files are ignored by Git.
+- No access tokens, passwords, or database credentials are committed.
+- Passwords are hashed and excluded from API responses.
+- Protected backend routes use `auth:sanctum`.
+- Post ownership is enforced using Laravel Policies.
+- Request inputs are validated server-side.
+- CORS allows the intended Vue development origin.
+- API base URLs are configured through environment variables.
+- Invalid authentication tokens are removed from frontend storage.
+
+### Code Quality Review
+
+The Vue and Laravel source files were reviewed for:
+
+- Debug statements.
+- Temporary values.
+- Unused imports.
+- Duplicated logic.
+- TODO and FIXME comments.
+- Reusable API-service organization.
+
+No risky or unnecessary refactoring was performed during final stabilization.
+
+### Issues Identified and Resolved
+
+The following issues were addressed during the review:
+
+- Added missing Laravel Feature Test coverage.
+- Confirmed logout token invalidation in isolated automated tests.
+- Added Pinia regression tests for update and delete operations.
+- Verified that ownership restrictions prevent unauthorized changes.
+- Confirmed that API errors are converted into clear frontend messages.
+- Verified that route protection and expired-session handling remain synchronized.
+
+### Task 17 Testing Evidence
+
+Testing screenshots are available in:
+
+```text
+screenshots/task-17/
+```
+
+The evidence includes:
+
+- Laravel tests passing.
+- Vue tests passing.
+- Final integrated application.
+- End-to-end create, update, and delete operations.
+- Responsive mobile layout.
+
+### Task 17 Status
+
+Task 17 is complete. Automated tests, regression QA, security review, code-quality checks, end-to-end CRUD verification, responsive testing, and final integration documentation were completed successfully.
+
+No remaining implementation blockers were identified.
