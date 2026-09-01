@@ -11,7 +11,9 @@ import {
 } from "pinia";
 
 import {
-  fetchPosts
+  deletePost,
+  fetchPosts,
+  updatePost
 } from "../services/postsApi";
 import { usePostsStore } from "../stores/posts";
 
@@ -104,4 +106,95 @@ describe("posts store", () => {
     expect(store.isLoading).toBe(false);
     expect(store.errorMessage).toBe("");
   });
+  it("updates the post in Pinia state after a successful API response", async () => {
+  updatePost.mockResolvedValue({
+    id: 1,
+    title: "Updated Task 17 Post",
+    body: "Updated post content",
+    status: "draft",
+    category: {
+      id: 1,
+      name: "Technology"
+    },
+    author: {
+      id: 1,
+      name: "Test User A"
+    }
+  });
+
+  const store = usePostsStore();
+
+  store.posts = [
+    {
+      id: 1,
+      title: "Original Post",
+      body: "Original content",
+      status: "published"
+    }
+  ];
+
+  const updatedPost =
+    await store.updateExistingPost(1, {
+      title: "Updated Task 17 Post",
+      body: "Updated post content",
+      status: "draft",
+      category_id: 1
+    });
+
+  expect(updatePost).toHaveBeenCalledWith(1, {
+    title: "Updated Task 17 Post",
+    body: "Updated post content",
+    status: "draft",
+    category_id: 1
+  });
+
+  expect(updatedPost.title).toBe(
+    "Updated Task 17 Post"
+  );
+  expect(store.posts[0].title).toBe(
+    "Updated Task 17 Post"
+  );
+  expect(store.currentPost.id).toBe(1);
+  expect(store.operationMessage).toBe(
+    "Post updated successfully."
+  );
+});
+
+it("removes the deleted post and favorite ID from Pinia state", async () => {
+  deletePost.mockResolvedValue({
+    status: "success"
+  });
+
+  fetchPosts.mockResolvedValue({
+    data: [],
+    meta: {
+      current_page: 1,
+      last_page: 1,
+      per_page: 5,
+      total: 0
+    }
+  });
+
+  const store = usePostsStore();
+
+  store.posts = [
+    {
+      id: 1,
+      title: "Post to Delete"
+    }
+  ];
+  store.currentPost = store.posts[0];
+  store.favoritePostIds = [1];
+
+  const wasDeleted = await store.removePost(1);
+
+  expect(deletePost).toHaveBeenCalledWith(1);
+  expect(wasDeleted).toBe(true);
+  expect(store.posts).toEqual([]);
+  expect(store.currentPost).toBeNull();
+  expect(store.favoritePostIds).toEqual([]);
+  expect(store.operationMessage).toBe(
+    "Post deleted successfully."
+  );
+});
 });
