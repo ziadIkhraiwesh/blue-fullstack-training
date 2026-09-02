@@ -50,6 +50,39 @@ const router = createRouter({
             component: () => import("../views/ContactView.vue")
         },
         {
+            path: "/pages/:slug",
+            name: "dynamic-page",
+            component: () =>
+                import("../views/DynamicPageView.vue")
+        },
+        {
+            path: "/manage/pages",
+            name: "manage-pages",
+            component: () =>
+                import("../views/PagesManagementView.vue"),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: "/manage/pages/create",
+            name: "create-page",
+            component: () =>
+                import("../views/PageFormView.vue"),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
+            path: "/manage/pages/:id/edit",
+            name: "edit-page",
+            component: () =>
+                import("../views/PageFormView.vue"),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
             path: "/:pathMatch(.*)*",
             name: "not-found",
             component: () => import("../views/NotFoundView.vue")

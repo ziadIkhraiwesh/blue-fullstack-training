@@ -21,62 +21,63 @@ const handleLogout = async () => {
 <template>
   <header class="site-header">
     <div class="container header-content">
-      <RouterLink
-        class="logo"
-        to="/"
-        exact-active-class="is-logo-active"
-      >
+      <RouterLink class="logo" to="/" exact-active-class="is-logo-active">
         NexaTech<span>.</span>
       </RouterLink>
 
       <nav aria-label="Main navigation">
         <ul class="navigation-list">
           <li>
-            <RouterLink
-              to="/"
-              exact-active-class="is-active"
-            >
+            <RouterLink to="/" exact-active-class="is-active">
               Home
             </RouterLink>
           </li>
 
           <li>
-            <RouterLink
-              to="/projects"
-              active-class="is-active"
-            >
+            <RouterLink to="/projects" active-class="is-active">
               Projects
             </RouterLink>
           </li>
 
           <li>
-            <RouterLink
-              to="/posts"
-              active-class="is-active"
-              :class="{
-                'is-active':
-                  route.path.startsWith('/posts') &&
-                  route.name !== 'create-post'
-              }"
-            >
+            <RouterLink to="/posts" active-class="is-active" :class="{
+              'is-active':
+                route.path.startsWith('/posts') &&
+                route.name !== 'create-post'
+            }">
               Posts
+            </RouterLink>
+          </li>
+          <li>
+            <RouterLink :to="{
+              name: 'dynamic-page',
+              params: {
+                slug: 'about-us'
+              }
+            }" active-class="is-active">
+              About
             </RouterLink>
           </li>
 
           <li>
-            <RouterLink
-              to="/posts/create"
-              active-class="is-active"
-            >
+            <RouterLink :to="{
+              name: 'dynamic-page',
+              params: {
+                slug: 'our-services'
+              }
+            }" active-class="is-active">
+              Services
+            </RouterLink>
+          </li>
+
+          <li>
+            <RouterLink to="/posts/create" active-class="is-active">
               Create Post
             </RouterLink>
           </li>
 
           <li>
-            <RouterLink
-              to="/favorites"
-              active-class="is-active"
-            >
+            <RouterLink to="/favorites" active-class="is-active">
               Favorites
               <span class="favorite-count">
                 {{ postsStore.favoriteCount }}
@@ -85,37 +86,28 @@ const handleLogout = async () => {
           </li>
 
           <li>
-            <RouterLink
-              to="/contact"
-              active-class="is-active"
-            >
+            <RouterLink to="/contact" active-class="is-active">
               Contact
             </RouterLink>
           </li>
+          <li v-if="authStore.isAuthenticated">
+            <RouterLink to="/manage/pages" active-class="is-active">
+              Manage Pages
+            </RouterLink>
+          </li>
 
-          <li
-            v-if="authStore.isAuthenticated"
-            class="auth-status"
-          >
+          <li v-if="authStore.isAuthenticated" class="auth-status">
             <span class="user-indicator">
               {{ authStore.user?.name || "Authenticated User" }}
             </span>
 
-            <button
-              class="logout-button"
-              type="button"
-              :disabled="authStore.isLoading"
-              @click="handleLogout"
-            >
+            <button class="logout-button" type="button" :disabled="authStore.isLoading" @click="handleLogout">
               Logout
             </button>
           </li>
 
           <li v-else>
-            <RouterLink
-              to="/login"
-              active-class="is-active"
-            >
+            <RouterLink to="/login" active-class="is-active">
               Login
             </RouterLink>
           </li>
