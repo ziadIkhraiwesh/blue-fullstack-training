@@ -7,6 +7,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\PageManagementController;
+use App\Http\Controllers\PublicPageController;
 
 Route::get('/health', [
     HealthController::class,
@@ -54,4 +56,42 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/posts/{id}', [PostController::class, 'update']);
     Route::patch('/posts/{id}', [PostController::class, 'update']);
     Route::delete('/posts/{id}', [PostController::class, 'destroy']);
+    Route::get('/manage/pages', [
+        PageManagementController::class,
+        'index',
+    ]);
+
+    Route::get('/manage/pages/{id}', [
+        PageManagementController::class,
+        'show',
+    ])->whereNumber('id');
+
+    Route::post('/manage/pages', [
+        PageManagementController::class,
+        'store',
+    ]);
+
+    Route::put('/manage/pages/{id}', [
+        PageManagementController::class,
+        'update',
+    ])->whereNumber('id');
+
+    Route::patch('/manage/pages/{id}', [
+        PageManagementController::class,
+        'update',
+    ])->whereNumber('id');
+
+    Route::delete('/manage/pages/{id}', [
+        PageManagementController::class,
+        'destroy',
+    ])->whereNumber('id');
 });
+Route::get('/pages', [
+    PublicPageController::class,
+    'index',
+]);
+
+Route::get('/pages/{slug}', [
+    PublicPageController::class,
+    'show',
+]);
