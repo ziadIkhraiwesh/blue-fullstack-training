@@ -1606,3 +1606,325 @@ The evidence includes:
 Task 17 is complete. Automated tests, regression QA, security review, code-quality checks, end-to-end CRUD verification, responsive testing, and final integration documentation were completed successfully.
 
 No remaining implementation blockers were identified.
+
+## Task 18: CMS Preparation, Dynamic Pages and Content Management
+
+Task 18 extends the existing Vue and Laravel application with a database-backed Pages module suitable for CMS-oriented content management.
+
+The implementation separates public content consumption from authenticated management operations.
+
+### Pages Content Model
+
+The Laravel `pages` table contains:
+
+| Field | Description |
+|---|---|
+| `id` | Primary key |
+| `user_id` | Owner and content manager |
+| `title` | Page title |
+| `slug` | Unique public page identifier |
+| `content` | Main page content |
+| `status` | `draft` or `published` |
+| `created_at` | Creation timestamp |
+| `updated_at` | Update timestamp |
+
+The `slug` column has a unique database constraint.
+
+Accepted slug examples:
+
+```text
+about-us
+our-services
+privacy-policy
+```
+
+Slugs use lowercase letters, numbers, and hyphens.
+
+### Public and Management Separation
+
+Public visitors can retrieve published pages without authentication.
+
+Draft pages are not available through the public API. Requesting a draft or missing page returns:
+
+```text
+404 Not Found
+```
+
+Creating, listing, editing, and deleting managed pages requires Laravel Sanctum authentication.
+
+Page ownership is enforced through `PagePolicy`. An authenticated user cannot manage a page owned by another user.
+
+### Public Pages API
+
+| Method | Endpoint | Authentication | Description |
+|---|---|---|---|
+| GET | `/api/pages` | Public | List published pages |
+| GET | `/api/pages/{slug}` | Public | Retrieve one published page by slug |
+
+Examples:
+
+```http
+GET /api/pages
+GET /api/pages/about-us
+GET /api/pages/our-services
+```
+
+A draft page is intentionally hidden:
+
+```http
+GET /api/pages/future-announcement
+```
+
+Response:
+
+```text
+404 Not Found
+```
+
+### Protected Management API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/manage/pages` | List the authenticated user's pages |
+| GET | `/api/manage/pages/{id}` | Retrieve a managed page |
+| POST | `/api/manage/pages` | Create a page |
+| PUT | `/api/manage/pages/{id}` | Update a page |
+| PATCH | `/api/manage/pages/{id}` | Partially route an update request |
+| DELETE | `/api/manage/pages/{id}` | Delete a page |
+
+All management endpoints use:
+
+```text
+auth:sanctum
+```
+
+Example request:
+
+```json
+{
+  "title": "About Us",
+  "slug": "about-us",
+  "content": "Dynamic page content.",
+  "status": "published"
+}
+```
+
+### Validation Rules
+
+Laravel validates all management requests.
+
+Main rules include:
+
+- `title`: required string with a maximum of 255 characters.
+- `slug`: required, unique, and limited to lowercase letters, numbers, and hyphens.
+- `content`: required string.
+- `status`: required and must be `draft` or `published`.
+
+Duplicate slugs return:
+
+```text
+422 Unprocessable Content
+```
+
+Vue displays Laravel validation errors beside the relevant fields.
+
+### Vue Dynamic Page Route
+
+Vue uses one reusable route for all public CMS pages:
+
+```text
+/#/pages/:slug
+```
+
+Examples:
+
+```text
+/#/pages/about-us
+/#/pages/our-services
+```
+
+The dynamic view requests page content from Laravel using the slug. Individual pages are not hardcoded as separate Vue components.
+
+The view handles:
+
+- Loading state.
+- Published content.
+- Missing or unpublished content.
+- Server and network errors.
+- Retry behavior.
+
+Page content is rendered as text instead of unsafe raw HTML to reduce script-injection risk.
+
+### Pages Management Interface
+
+Authenticated users can open:
+
+```text
+/#/manage/pages
+```
+
+The management interface supports:
+
+- Listing owned pages.
+- Viewing page status.
+- Creating pages.
+- Editing pages.
+- Publishing and unpublishing content.
+- Deleting pages.
+- Displaying validation errors.
+- Opening published pages publicly.
+
+The protected form routes are:
+
+```text
+/#/manage/pages/create
+/#/manage/pages/{id}/edit
+```
+
+Unauthenticated users are redirected to the login page.
+
+### Reusable Frontend Structure
+
+Task 18 introduces:
+
+```text
+src/services/pagesApi.js
+src/stores/pages.js
+src/views/DynamicPageView.vue
+src/views/PagesManagementView.vue
+src/views/PageFormView.vue
+src/__tests__/pagesStore.spec.js
+```
+
+The frontend flow is:
+
+```text
+Vue View
+→ Pinia Pages Store
+→ Reusable Pages API Service
+→ Laravel REST API
+→ Validation and PagePolicy
+→ Eloquent Page Model
+→ MySQL Database
+→ JSON Resource Response
+→ Updated Vue Interface
+```
+
+### Database Migration and Seeding
+
+Run the new migration:
+
+```bash
+php artisan migrate
+```
+
+Seed the required user and sample pages:
+
+```bash
+php artisan db:seed --class=UserSeeder
+php artisan db:seed --class=PageSeeder
+```
+
+Sample pages include:
+
+| Slug | Status |
+|---|---|
+| `about-us` | Published |
+| `our-services` | Published |
+| `future-announcement` | Draft |
+
+### Automated Tests
+
+Laravel Feature Tests cover:
+
+- Public published-page retrieval.
+- Draft-page protection.
+- Published-only public listing.
+- Authentication requirements.
+- Authenticated page creation.
+- Duplicate-slug validation.
+- Ownership authorization.
+- Missing-page behavior.
+
+Run the Pages tests:
+
+```bash
+php artisan test --filter=PageApiTest
+```
+
+Run all Laravel tests:
+
+```bash
+php artisan test
+```
+
+Vue tests cover dynamic page loading and missing-page state:
+
+```bash
+npm run test
+```
+
+Create the production build:
+
+```bash
+npm run build
+```
+
+### Security Review
+
+The Pages module includes the following security protections:
+
+- Management endpoints require Sanctum authentication.
+- Page ownership is enforced server-side using `PagePolicy`.
+- `user_id` is assigned through the authenticated user's relationship.
+- The client cannot select or forge the page owner.
+- Validation is enforced by Laravel.
+- Duplicate slugs are prevented by validation and a database constraint.
+- Draft content is hidden from public endpoints.
+- Environment files, credentials, and access tokens are excluded from Git.
+- Public content is not rendered using unsafe raw HTML.
+
+### Task 18 Testing
+
+The following scenarios were tested:
+
+- Public published-page loading.
+- Dynamic rendering by slug.
+- Draft page returning `404`.
+- Missing page returning `404`.
+- Unauthenticated management-route redirect.
+- Authenticated management list.
+- Page creation.
+- Page editing.
+- Draft-to-published behavior.
+- Page deletion.
+- Required-field validation.
+- Duplicate-slug validation.
+- Ownership protection.
+- Responsive public and management views.
+- Laravel automated tests.
+- Vue automated tests.
+- Vue production build.
+
+### Task 18 Screenshot Evidence
+
+Testing evidence is available in:
+
+```text
+screenshots/task-18/
+```
+
+The evidence includes:
+
+- Laravel tests passing.
+- Vue tests passing.
+- Pages management interface.
+- Dynamically rendered public page.
+- Published and unpublished behavior.
+- Duplicate-slug validation.
+
+### Task 18 Status
+
+Task 18 is complete. The application now includes a reusable Pages content model, public dynamic rendering, authenticated content management, validation, ownership authorization, automated tests, responsive behavior, and updated documentation.
+
+No remaining implementation blockers were identified.
