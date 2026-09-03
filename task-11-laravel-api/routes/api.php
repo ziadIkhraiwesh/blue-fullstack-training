@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageManagementController;
 use App\Http\Controllers\PublicPageController;
+use App\Http\Controllers\PageBlockController;
 
 Route::get('/health', [
     HealthController::class,
@@ -49,6 +50,44 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get(
+        '/manage/pages/{pageId}/blocks',
+        [PageBlockController::class, 'index']
+    )->whereNumber('pageId');
+
+    Route::post(
+        '/manage/pages/{pageId}/blocks',
+        [PageBlockController::class, 'store']
+    )->whereNumber('pageId');
+
+    Route::put(
+        '/manage/pages/{pageId}/blocks/reorder',
+        [PageBlockController::class, 'reorder']
+    )->whereNumber('pageId');
+
+    Route::put(
+        '/manage/pages/{pageId}/blocks/{blockId}',
+        [PageBlockController::class, 'update']
+    )->whereNumber([
+                'pageId',
+                'blockId',
+            ]);
+
+    Route::patch(
+        '/manage/pages/{pageId}/blocks/{blockId}',
+        [PageBlockController::class, 'update']
+    )->whereNumber([
+                'pageId',
+                'blockId',
+            ]);
+
+    Route::delete(
+        '/manage/pages/{pageId}/blocks/{blockId}',
+        [PageBlockController::class, 'destroy']
+    )->whereNumber([
+                'pageId',
+                'blockId',
+            ]);
     Route::get('/me', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
 

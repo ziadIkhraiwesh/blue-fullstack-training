@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
             UserSeeder::class,
             PageSeeder::class,
+            ContentBlockSeeder::class,
         ]);
     }
 }

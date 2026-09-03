@@ -23,7 +23,7 @@ class PublicPageController extends Controller
     public function show(string $slug): PageResource|JsonResponse
     {
         $page = Page::query()
-            ->with('user')
+            ->with(['user', 'blocks'])
             ->where('slug', $slug)
             ->where('status', 'published')
             ->first();

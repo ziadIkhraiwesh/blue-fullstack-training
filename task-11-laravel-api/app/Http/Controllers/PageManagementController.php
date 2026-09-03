@@ -28,8 +28,10 @@ class PageManagementController extends Controller
         Request $request,
         int $id
     ): PageResource|JsonResponse {
-        $page = Page::with('user')->find($id);
-
+        $page = Page::with([
+            'user',
+            'blocks',
+        ])->find($id);
         if (!$page) {
             return response()->json([
                 'status' => 'error',

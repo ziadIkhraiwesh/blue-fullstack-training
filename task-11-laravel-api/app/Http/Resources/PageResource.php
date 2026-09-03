@@ -15,6 +15,9 @@ class PageResource extends JsonResource
             'slug' => $this->slug,
             'content' => $this->content,
             'status' => $this->status,
+            'blocks' => ContentBlockResource::collection(
+                $this->whenLoaded('blocks')
+            ),
 
             'author' => [
                 'id' => $this->user?->id,
