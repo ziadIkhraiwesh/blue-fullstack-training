@@ -1928,3 +1928,399 @@ The evidence includes:
 Task 18 is complete. The application now includes a reusable Pages content model, public dynamic rendering, authenticated content management, validation, ownership authorization, automated tests, responsive behavior, and updated documentation.
 
 No remaining implementation blockers were identified.
+## Task 19: Reusable Content Blocks and Dynamic Rendering
+
+Task 19 extends the Pages module from Task 18 by allowing each page to contain multiple reusable and ordered content blocks.
+
+Instead of using one fixed page layout, Laravel stores the page composition in the database and Vue selects the appropriate reusable component for every returned block type.
+
+### Content Blocks Model
+
+The `content_blocks` table contains:
+
+| Field | Description |
+|---|---|
+| `id` | Primary key |
+| `page_id` | Parent page foreign key |
+| `type` | Content block type |
+| `position` | Display order inside the page |
+| `data` | JSON configuration and content |
+| `created_at` | Creation timestamp |
+| `updated_at` | Update timestamp |
+
+Deleting a page automatically deletes its related blocks through the foreign-key cascade rule.
+
+The `data` field is stored as JSON and cast to an array by the Laravel model.
+
+### Page and Content Block Relationship
+
+Each Page can contain multiple Content Blocks:
+
+```text
+Page has many Content Blocks
+Content Block belongs to Page
+```
+
+Laravel retrieves blocks using:
+
+```php
+$page->blocks
+```
+
+The relationship orders blocks by:
+
+```text
+position
+id
+```
+
+This ensures a stable and predictable public display order.
+
+### Supported Block Types
+
+The implementation supports four reusable types:
+
+| Type | Main Data |
+|---|---|
+| `hero` | Heading and subheading |
+| `text` | Optional heading and body |
+| `features` | Heading and a list of feature items |
+| `cta` | Heading, text, button label, and button URL |
+
+Example Hero data:
+
+```json
+{
+  "heading": "Building Better Digital Experiences",
+  "subheading": "Reusable CMS-style page content."
+}
+```
+
+Example Text data:
+
+```json
+{
+  "heading": "About Our Approach",
+  "body": "Reusable text content."
+}
+```
+
+Example Features data:
+
+```json
+{
+  "heading": "What We Deliver",
+  "items": [
+    {
+      "title": "Reusable Content",
+      "description": "Manage sections without duplicating layouts."
+    }
+  ]
+}
+```
+
+Example Call to Action data:
+
+```json
+{
+  "heading": "Start Your Next Project",
+  "text": "Contact our team.",
+  "button_label": "Contact Us",
+  "button_url": "/contact"
+}
+```
+
+### Protected Block Management API
+
+All Content Block management routes require Laravel Sanctum authentication.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/manage/pages/{pageId}/blocks` | List the page blocks |
+| POST | `/api/manage/pages/{pageId}/blocks` | Add a content block |
+| PUT | `/api/manage/pages/{pageId}/blocks/reorder` | Update block order |
+| PUT | `/api/manage/pages/{pageId}/blocks/{blockId}` | Update a block |
+| PATCH | `/api/manage/pages/{pageId}/blocks/{blockId}` | Update a block |
+| DELETE | `/api/manage/pages/{pageId}/blocks/{blockId}` | Delete a block |
+
+The parent PagePolicy is checked before every management operation. A user cannot manage blocks belonging to another user's page.
+
+### Block Validation
+
+Laravel validates:
+
+- The block type.
+- The optional position.
+- The JSON data structure.
+- Required fields for every supported type.
+- Feature item titles and descriptions.
+- CTA button labels and URLs.
+- Whether reordered block IDs belong to the requested page.
+
+Unsupported block types are rejected by the management API with:
+
+```text
+422 Unprocessable Content
+```
+
+### Block Reordering
+
+The management API accepts an ordered list:
+
+```json
+{
+  "blocks": [
+    {
+      "id": 4,
+      "position": 1
+    },
+    {
+      "id": 1,
+      "position": 2
+    }
+  ]
+}
+```
+
+The updates are performed inside a database transaction.
+
+The Vue interface provides:
+
+```text
+Move Up
+Move Down
+```
+
+After a successful request, Pinia synchronizes the returned order. The public page then renders the blocks in the new order.
+
+### Vue Block Management Interface
+
+Authenticated users can manage a page's blocks at:
+
+```text
+/#/manage/pages/{id}/blocks
+```
+
+The interface supports:
+
+- Adding a block.
+- Selecting a supported block type.
+- Editing block content.
+- Setting or automatically assigning a position.
+- Deleting a block.
+- Moving blocks up and down.
+- Displaying Laravel validation errors.
+- Opening the dynamically rendered public page.
+
+The Block form changes according to the selected block type.
+
+Feature items use one item per line:
+
+```text
+Feature title | Feature description
+```
+
+### Reusable Vue Block Components
+
+Task 19 introduces:
+
+```text
+src/components/blocks/HeroBlock.vue
+src/components/blocks/TextBlock.vue
+src/components/blocks/FeaturesBlock.vue
+src/components/blocks/CallToActionBlock.vue
+src/components/blocks/UnsupportedBlock.vue
+```
+
+A component map inside `DynamicPageView.vue` connects backend block types to Vue components:
+
+```js
+const blockComponents = {
+  hero: HeroBlock,
+  text: TextBlock,
+  features: FeaturesBlock,
+  cta: CallToActionBlock
+};
+```
+
+Adding a supported type later only requires creating its component and adding it to the map.
+
+### Dynamic Public Rendering
+
+Public pages continue using:
+
+```text
+/#/pages/:slug
+```
+
+Laravel returns the published page and its ordered blocks. Vue loops through the blocks and renders the mapped component dynamically.
+
+The rendering flow is:
+
+```text
+Published Page Request
+→ Laravel Page with Ordered Blocks
+→ PageResource and ContentBlockResource
+→ Vue Pages Store
+→ DynamicPageView
+→ Block Component Map
+→ Reusable Vue Components
+```
+
+Pages without blocks continue displaying their original Task 18 content as a fallback.
+
+### Unsupported Block Fallback
+
+If an unknown block type is returned in the future, Vue renders `UnsupportedBlock.vue`.
+
+The page does not crash or become blank. It displays a clear unavailable-section message and continues rendering the remaining supported blocks.
+
+### Loading and Error States
+
+The application continues handling:
+
+- Loading states.
+- Empty block lists.
+- Missing pages.
+- `404 Not Found`.
+- Validation errors.
+- `401 Unauthorized`.
+- `403 Forbidden`.
+- Network errors.
+- Server errors.
+- Unsupported content types.
+
+### Database Migration and Seeding
+
+Run the migration:
+
+```bash
+php artisan migrate
+```
+
+Seed the sample blocks:
+
+```bash
+php artisan db:seed --class=UserSeeder
+php artisan db:seed --class=PageSeeder
+php artisan db:seed --class=ContentBlockSeeder
+```
+
+The seeded About page contains the following ordered blocks:
+
+```text
+1 Hero
+2 Text
+3 Feature List
+4 Call to Action
+```
+
+Correction: the implemented seed order is:
+
+```text
+1 Hero
+2 Text
+3 Feature List
+4 Call to Action
+```
+
+### Automated Tests
+
+Laravel tests cover:
+
+- Page-to-block relationships.
+- Ordered public rendering.
+- Protected management endpoints.
+- Authenticated block creation.
+- Block-type validation.
+- Ownership authorization.
+- Block reordering.
+
+Run only the Content Block tests:
+
+```bash
+php artisan test --filter=ContentBlockApiTest
+```
+
+Run all Laravel tests:
+
+```bash
+php artisan test
+```
+
+Vue tests verify:
+
+- Hero block rendering.
+- Text block rendering.
+- Feature block rendering.
+- Call-to-action rendering.
+- Unsupported block fallback behavior.
+
+Run Vue tests:
+
+```bash
+npm run test
+```
+
+Create the production build:
+
+```bash
+npm run build
+```
+
+### October CMS Preparation Notes
+
+This task demonstrates several concepts that are important when working with a CMS such as October CMS.
+
+A page represents the public URL and its general metadata. Content blocks represent reusable and manageable sections placed inside that page. Each block has a type, content configuration, and display position.
+
+The management interface is separated from the public presentation. Authenticated users configure the content, while public visitors only receive the published result. Vue does not need a separate hardcoded page component for every possible page structure because it renders the stored blocks dynamically.
+
+These concepts are similar to working with CMS pages, reusable partials or components, structured content, and backend content management.
+
+### Task 19 Testing
+
+The following scenarios were tested:
+
+- Loading ordered blocks with a public page.
+- Rendering Hero, Text, Feature List, and CTA blocks.
+- Adding a content block.
+- Editing a content block.
+- Deleting a content block.
+- Moving blocks up and down.
+- Confirming that public order changes after management reordering.
+- Rejecting invalid block data.
+- Rejecting unsupported block types.
+- Protecting management routes.
+- Enforcing page ownership.
+- Handling pages with no blocks.
+- Handling unsupported content gracefully.
+- Responsive rendering.
+- Laravel automated tests.
+- Vue automated tests.
+- Vue production build.
+
+### Task 19 Screenshot Evidence
+
+Testing evidence is available in:
+
+```text
+screenshots/task-19/
+```
+
+The evidence includes:
+
+- Laravel tests passing.
+- Vue tests passing.
+- Content Block management.
+- Hero, Text, Feature List, and CTA blocks rendered publicly.
+- Management order changes.
+- Public rendering after reordering.
+
+### Task 19 Status
+
+Task 19 is complete. Pages can now be composed from reusable, ordered, database-backed content blocks and rendered dynamically through reusable Vue components.
+
+Content management, validation, ownership authorization, reordering, automated tests, graceful fallbacks, and documentation were completed successfully.
+
+No remaining implementation blockers were identified.
