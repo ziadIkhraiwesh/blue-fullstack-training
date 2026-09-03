@@ -48,58 +48,32 @@ onMounted(() => {
           </p>
         </div>
 
-        <RouterLink
-          class="button button-primary"
-          :to="{ name: 'create-page' }"
-        >
+        <RouterLink class="button button-primary" :to="{ name: 'create-page' }">
           Create Page
         </RouterLink>
       </div>
 
-      <p
-        v-if="successMessage"
-        class="success-message"
-        role="status"
-      >
+      <p v-if="successMessage" class="success-message" role="status">
         {{ successMessage }}
       </p>
 
-      <p
-        v-if="deleteError"
-        class="error-message"
-        role="alert"
-      >
+      <p v-if="deleteError" class="error-message" role="alert">
         {{ deleteError }}
       </p>
 
-      <div
-        v-if="isManagedPagesLoading"
-        class="request-state"
-        role="status"
-      >
+      <div v-if="isManagedPagesLoading" class="request-state" role="status">
         Loading managed pages...
       </div>
 
-      <div
-        v-else-if="managedPagesError"
-        class="request-state error-state"
-        role="alert"
-      >
+      <div v-else-if="managedPagesError" class="request-state error-state" role="alert">
         <p>{{ managedPagesError }}</p>
 
-        <button
-          class="button button-primary"
-          type="button"
-          @click="pagesStore.loadManagedPages"
-        >
+        <button class="button button-primary" type="button" @click="pagesStore.loadManagedPages">
           Retry
         </button>
       </div>
 
-      <div
-        v-else-if="managedPages.length === 0"
-        class="request-state"
-      >
+      <div v-else-if="managedPages.length === 0" class="request-state">
         No pages have been created yet.
       </div>
 
@@ -115,53 +89,44 @@ onMounted(() => {
           </thead>
 
           <tbody>
-            <tr
-              v-for="page in managedPages"
-              :key="page.id"
-            >
+            <tr v-for="page in managedPages" :key="page.id">
               <td>{{ page.title }}</td>
               <td>/pages/{{ page.slug }}</td>
               <td>
-                <span
-                  class="status-badge"
-                  :class="`status-${page.status}`"
-                >
+                <span class="status-badge" :class="`status-${page.status}`">
                   {{ page.status }}
                 </span>
               </td>
               <td>
                 <div class="page-actions">
-                  <RouterLink
-                    v-if="page.status === 'published'"
-                    class="action-link"
-                    :to="{
-                      name: 'dynamic-page',
-                      params: {
-                        slug: page.slug
-                      }
-                    }"
-                  >
+                  <RouterLink class="action-link" :to="{
+                    name: 'manage-page-blocks',
+                    params: {
+                      id: page.id
+                    }
+                  }">
+                    Manage Blocks
+                  </RouterLink>
+                  <RouterLink v-if="page.status === 'published'" class="action-link" :to="{
+                    name: 'dynamic-page',
+                    params: {
+                      slug: page.slug
+                    }
+                  }">
                     View
                   </RouterLink>
 
-                  <RouterLink
-                    class="action-link"
-                    :to="{
-                      name: 'edit-page',
-                      params: {
-                        id: page.id
-                      }
-                    }"
-                  >
+
+                  <RouterLink class="action-link" :to="{
+                    name: 'edit-page',
+                    params: {
+                      id: page.id
+                    }
+                  }">
                     Edit
                   </RouterLink>
 
-                  <button
-                    class="delete-button"
-                    type="button"
-                    :disabled="isDeleting"
-                    @click="handleDelete(page)"
-                  >
+                  <button class="delete-button" type="button" :disabled="isDeleting" @click="handleDelete(page)">
                     Delete
                   </button>
                 </div>

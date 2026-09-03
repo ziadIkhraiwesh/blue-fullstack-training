@@ -83,6 +83,15 @@ const router = createRouter({
             }
         },
         {
+            path: "/manage/pages/:id/blocks",
+            name: "manage-page-blocks",
+            component: () =>
+                import("../views/PageBlocksManagementView.vue"),
+            meta: {
+                requiresAuth: true
+            }
+        },
+        {
             path: "/:pathMatch(.*)*",
             name: "not-found",
             component: () => import("../views/NotFoundView.vue")

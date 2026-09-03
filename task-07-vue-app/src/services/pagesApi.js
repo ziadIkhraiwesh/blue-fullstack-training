@@ -62,3 +62,62 @@ export const deletePage = async (pageId) => {
 
   return response.data;
 };
+export const fetchPageBlocks = async (
+  pageId
+) => {
+  const response = await apiClient.get(
+    `/manage/pages/${pageId}/blocks`
+  );
+
+  return response.data.data;
+};
+
+export const createPageBlock = async (
+  pageId,
+  blockData
+) => {
+  const response = await apiClient.post(
+    `/manage/pages/${pageId}/blocks`,
+    blockData
+  );
+
+  return response.data;
+};
+
+export const updatePageBlock = async (
+  pageId,
+  blockId,
+  blockData
+) => {
+  const response = await apiClient.put(
+    `/manage/pages/${pageId}/blocks/${blockId}`,
+    blockData
+  );
+
+  return response.data;
+};
+
+export const deletePageBlock = async (
+  pageId,
+  blockId
+) => {
+  const response = await apiClient.delete(
+    `/manage/pages/${pageId}/blocks/${blockId}`
+  );
+
+  return response.data;
+};
+
+export const reorderPageBlocks = async (
+  pageId,
+  blocks
+) => {
+  const response = await apiClient.put(
+    `/manage/pages/${pageId}/blocks/reorder`,
+    {
+      blocks
+    }
+  );
+
+  return response.data.data;
+};
